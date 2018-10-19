@@ -86,15 +86,15 @@
 <meta property="og:site_name" content="僻静小院">
 <meta property="og:description" content="Natural Language Processing(NLP)$\qquad$想要让机器理解人类的语言的过程，就像教一个孩子说话一样。 $\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG311.png">
+<meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG316.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/20171128201141139.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG312.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG315.png">
-<meta property="og:updated_time" content="2018-10-17T11:02:08.537Z">
+<meta property="og:updated_time" content="2018-10-19T08:20:07.776Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Word Embedding: CBOW, skip-gram and fasttext.">
 <meta name="twitter:description" content="Natural Language Processing(NLP)$\qquad$想要让机器理解人类的语言的过程，就像教一个孩子说话一样。 $\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成">
-<meta name="twitter:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG311.png">
+<meta name="twitter:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG316.png">
 
 
 
@@ -308,8 +308,8 @@
 <p>$\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成了统计规律(大力出奇迹)，学法语，就像是规则+较少的数据，虽然说得不像中文那样好，但也很大限度上发挥了那一点数据的价值。</p>
 <p>$\qquad$然而，想让蠢萌的机器一下子学会长长的句子们，还是有点难。学起汉语还要分词，下次回学校一定要抓个学汉语的瑞士人，问问他们是怎么学会的。信息量一时半会也未必能足够，尤其是面对特殊领域问题时；辞海又那么大，想要用数学去表示一个词也不容易。不用数学表示可不可以呢？毕竟我们在识字的时候，也没有什么向量不向量的。曾经，以规则约束确实是nlp的主流力量。然而，世界上有那么多词，除了规则外有那么多“固定搭配”，请多少专家才能总结好所有的规则呢。</p>
 <h1 id="Word-Embedding"><a href="#Word-Embedding" class="headerlink" title="Word Embedding"></a>Word Embedding</h1><p>$\qquad$这么多令人头疼的问题，不如从词的向量化看起。我刚开始实习的时候，最先用到的就是fasttext，毕竟现在的主流方法还是把其他问题转化到数学空间里。</p>
-<p>$\qquad$理想上，我们希望构建这样一个空间：一个能够表征所有词的空间，同时通过这个空间的度量来完成词的度量。最简单的方法无异于：忽略上下文的顺序，取出每个词来，对每个词的有无进行判断从而表示一句话。但这样的向量维数也太高了吧！简单，压缩一下。当然，是不能直接去压缩前面的超大向量的，我们可以另辟蹊径。目前比较好的做法是，利用神经网络直接随机初始化，然后根据词之间的信息迭代生成向量。根据对词的信息的利用方法，主要分为cbow和skip-gram两类。</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG311.png" alt="word2vec_all"></p>
+<p>$\qquad$理想上，我们希望构建这样一个空间：一个能够表征所有词的空间，同时通过这个空间的度量来完成词的度量。最简单的方法无异于：忽略上下文的顺序，取出每个词来，对每个词的有无进行判断从而表示一句话。但这样的向量维数也太高了吧！简单，压缩一下。当然，是不能直接去压缩前面的超大向量的，这样softmax时的分母负担很大。目前比较好的做法是，利用神经网络直接随机初始化，然后根据词之间的信息迭代生成向量。根据对词的信息的利用方法，主要分为cbow和skip-gram两类。<br>$\qquad$<em>顺带一提，softmax的命名由来：作为normalization工具，’max’是因为它增强了较大值使其占比更高，soft是因为它还保留了小值部分，使其不变为0.</em></p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG316.png" alt="word2vec_all"></p>
 <h2 id="CBOW-amp-skip-gram"><a href="#CBOW-amp-skip-gram" class="headerlink" title="CBOW &amp; skip-gram"></a>CBOW &amp; skip-gram</h2><p>$\qquad$cbow通过词左右的邻居的信息来预测词本身，skip-gram正好相反，用一个词的信息预测旁边的邻居。这个“预测”讲起来其实有点误导，因为在训练的过程中，被预测的词是已知的，也就是“老师”，而预测别人的词是需要通过GD修正的，是真正的“学生”。所以说在cbow中，通过中间词“老师”的教导，相邻的“学生们”学到了它们应有的表达形式。每个学生最后的成果如何呢？这就要看它天生和多少老师相邻了(它本身的出现频率)。纵览全文，每个词都做了一次老师，辐射了一次知识，复杂度为O(W) [记W为文本的总词数]。skip-gram的阵容则显得豪华一点：每次都由旁边的一票老师们分别开一次小灶，获得的知识当然更多，所得的结果更加准确。但是需要的时间毫无疑问也更久一点，复杂度为O(WC) [记2C为每个词的邻居数]。</p>
 <p>$\qquad$选好教学方式，下面的就是怎么教的问题了。从多到一，最直接的想法就是线性映射，最好直接算个加和或平均数，直接走一圈滑动平均滤波器，最后再来个softmax完事。然而没那么简单，这个softmax不是那么好算。为了改进这一问题，目前有两种主要的方法：Hierarchical Softmax 和 Negative Sampling。</p>
 <h3 id="Hierarchical-Softmax"><a href="#Hierarchical-Softmax" class="headerlink" title="Hierarchical Softmax"></a>Hierarchical Softmax</h3><p>$\qquad$既然softmax这么难算，不如想个办法减小它的计算量。Hierarchical softmax就是出于这样一种想法，利用霍夫曼树(Huffman Tree)来替代softmax完成从projection layer到output layer的映射。对于从input layer到projection layer，则依旧采取取平均数的方法。</p>
@@ -333,7 +333,7 @@
 <p>$\qquad$Hierarchical Softmax将隐层到词的距离缩短到了$log(W)$。然而在最坏的情况(词非常生僻)下，它的表现可能并不尽如人意。</p>
 </li>
 </ul>
-<h3 id="Negative-Sampling"><a href="#Negative-Sampling" class="headerlink" title="Negative Sampling"></a>Negative Sampling</h3><p>$\qquad$负采样则采取了另一种思路。对于一个有大量正样本及其对应标签的数据集，想要创造负样本其实很简单：把样本和标签错个位，他们就都对不上号了。实际应用中为了考虑到样本的分布特性，采样方法会稍微复杂一点：对于文章中的词$w\in W$，它出现的概率(加了幂指数)后为：$P(w) = \frac{count(w)^{3/4}}{\sum_{u \in W}count(u)^{3/4}}$；按照这个概率进行不放回随机抽样，即可得到负样本。如果需要的负样本数量较大，则可把原表复制几份进行抽样。这就相当于把一个总长为1，按概率分段的线条分成M等份($M\ge W$)，从中取出$neg$个位置。word2vec中，$M$的默认值为$10^8$。</p>
+<h3 id="Negative-Sampling"><a href="#Negative-Sampling" class="headerlink" title="Negative Sampling"></a>Negative Sampling</h3><p>$\qquad$负采样则采取了另一种思路。对于一个有大量正样本及其对应标签的数据集，想要创造负样本其实很简单：把样本和标签错个位，他们就都对不上号了。实际应用中为了考虑到样本的分布特性，采样方法会稍微复杂一点：对于文章中的词$w\in W$，它出现的概率(加了幂指数3/4,使低频词的概率增加)后为：$P(w) = \frac{count(w)^{3/4}}{\sum_{u \in W}count(u)^{3/4}}$；按照这个概率进行不放回随机抽样，即可得到负样本。如果需要的负样本数量较大，则可把原表复制几份进行抽样。这就相当于把一个总长为1，按概率分段的线条分成M等份($M\ge W$)，从中取出$neg$个位置。word2vec中，$M$的默认值为$10^8$。</p>
 <p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG315.png" width="80%"></p>
 <p>$\qquad$有了正负样本和标签，我们可以得到需要最大化的函数为：</p>
 <script type="math/tex; mode=display">\prod_{i=0}^{neg}P(context(w_0),w_i) = \sigma(x_{w_0},\theta_{w_0}^T)\prod_{i=1}^{neg}(1-\sigma(x_{w_i},\theta_{w_i}^T))</script><p>$\qquad$对它求log取负，则得到了需要最小化的目标函数。通过Gradient Descendent优化参数和输入值，则可以得到所需要的向量。</p>
