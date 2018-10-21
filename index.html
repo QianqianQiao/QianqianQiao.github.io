@@ -251,7 +251,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/14/new/" itemprop="url">new</a></h1>
+                <a class="post-title-link" href="/2018/10/14/new/" itemprop="url">[论文笔记]QANet: Combining Local Convolution with Global Self-Attention for Reading Comprehension</a></h1>
         
 
         <div class="post-meta">
@@ -303,7 +303,54 @@
       
         
           
-            <p>s</p>
+            <h1 id="QQQ序言"><a href="#QQQ序言" class="headerlink" title="QQQ序言"></a>QQQ序言</h1><p>$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的<a href="https://arxiv.org/abs/1804.09541" target="_blank" rel="noopener">QANet</a>。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了<a href="http://arxiv.org/
+abs/1611.01603" target="_blank" rel="noopener">BiDAF</a>的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对data augmentation，提升了指标。</p>
+<h1 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h1><p>$\qquad$ 目前，主流的端到端的阅读理解或QA模型为带attention的RNN，其中的代表如Bidirectional Attention Flow (BiDAF)。recurrent的部分负责读入sequential的数据，而attention的部分负责处理long-term的特征。但是这种模型的缺点是train/test的时候速度都很慢，不利于实时实时处理。因此作者提出了一种新的不需要RNN结构的QA模型QANet，从而在很大程度改进了QA模型的速度。这个模型用卷积负责学习局部特征，而self-attention负责全局特征。相比之前的模型它的速度更快，且在更长时间下能够得到更好的结果。</p>
+<p>$\qquad$在训练QANet的同时，作者对公开数据集SQuAD进行了data augmentation：将原语句翻译成法语和德语后再翻译成英语，从而得到同一句话的不同表示形式。从比较试验结果中可见，data augmentation对提升模型accuracy有极大的帮助。</p>
+<h1 id="THE-MODEL"><a href="#THE-MODEL" class="headerlink" title="THE MODEL"></a>THE MODEL</h1><p>$\qquad$<em>定义：记包含$n$词的背景知识段为$C={c_1…c_n}$，问句为$Q={q_1…q_m}$，其中问句的词全部来源于背景知识段；同时记原词和它的vector形式为$x$，$x\in C,Q$。</em></p>
+<p>$\qquad$一般的阅读理解模型包括五部分：embedding layer, embedding encoder layer, context-query attention layer,model encoder layer和output layer。本文的创新之处在于，在embedding和modeling encoder layer中只用卷积和self-attention而没有用RNN(比只用self-attention$\uparrow$2.7F1)。这种做法的好处是，一方面可以并行处理输入数据，使得模型的速度大大加快；另一方面可以利用cnn已经成熟的regularization方法(比如layer dropout、stochastic depth)等($\uparrow$0.2F1)。模型的具体细节如下：</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG319.png"></p>
+<ol>
+<li><p><strong>Input Embedding Layer</strong>: 主要通过两种方法embedding。①：直接将词变成300维向量$x_w$。主要利用预先训练好的GloVe，其中没有包含到的词map到<unk>上并随机初始化。②：把每个字母变成200维向量后拼成词，每个词padding或truncating到16个字母的长度，然后在200维上每维取最大值再卷积得到$x_c$。最后得到$x$的embedding$[x_w;x_c]$，长度为500。</unk></p>
+</li>
+<li><p><strong>Embedding Encoder Layer</strong>: 首先通过一个1维卷积将每个词的500维向量映射为128维。采用一个embedding encoder block，主要由三部分组成: [convolution_layer * # + self-attention_layer + feed-forward_layer]。</p>
+<ol>
+<li><p>这三部分之前首先是一个position encoding，用两个不同的波来增强位置信息：<script type="math/tex">PE_{pos, 2i}=sin(pos/10000^{2i/d_{model}})</script> <script type="math/tex">PE_{pos, 2i+1}cos(pos/10000^{2i/d_{model}})</script> 其中pos表示词的位置，i表示embedding中第i维，$d_{model}$表示embedding的维度。所得结果与输入相加作为新的输入。</p>
+</li>
+<li><p>与传统的卷积层不同，本文用的是占空间更小的<a href="https://arxiv.org/abs/1610.02357" target="_blank" rel="noopener">depthwise separable convolution</a>。这种卷积的思想是：传统的卷积中，一个kernel对每个通道作一次卷积，然后各通道所得结果通过相加或pooling结合起来，最终1个kernel和n个channel结合得到1个channel的结果。这个kernel的任务很重：既要学习一个channel上的空间分布特征，还要学习channel之间的特征。因此提出一种办法来给不同的kernel分工：利用$1\times 1$的kernel卷一下(相当于只针对一个通道)。深度可分卷积先用$n\times n$的kernel对每个通道独立执行卷积，再用$1\times 1$的kernel学习通道之间的关系。实际上这两步的先后顺序对结果的影响应该不大。示意图如下：</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG325.png"></p>
+<p>本文中kernel_size = 7; num_filters = 128; 一个block中有4个卷积层。</p>
+</li>
+<li><p>self-attention部分采用了<a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">multi-head attention mechanism</a>。这种attention对input(query和keys)的每个位置计算所有位置加权和，算query和key的点积来衡量他们的相似度。num_head = 8。</p>
+</li>
+<li><p>每个这样的block整体构成了一个residual block，输出为$f(layernorm(x))+x$，维度为128。</p>
+</li>
+</ol>
+<p><em>复习：<strong>Batch Normalization [BN]</strong>：各个数据的同一维度normalization。这样同一维每次进神经网的差异不会太大，对梯度下降收敛速度有利。尤其适用于过完非线性层后的数据。然而训练的时候不可能对所有训练数据一次性算个方差，故衍生出小批次normalization。难以用于recurrent-network。<strong>Layer Normalization [LN]</strong>：和BN垂直，对同一数据或activation在全维度上normalization。可用于recurrent-network，但在cnn中少见。</em></p>
+</li>
+<li><p><strong>Context-Query Attention Layer</strong>: 目的是计算context和query之间的联系，找出其中的关键词语。用的是常见的标准模型。过程如下：首先用<a href="http://arxiv.org/
+abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每个context和query对的相似性得到相似矩阵$S\in \boldsymbol R ^{n\times m} $，然后用softmax对$S$的每一行normalize得到$\overline S$。$A=\overline S \cdot Q^T \in \boldsymbol R ^{n\times d}$即为所求的context-query attention($d$为一个词embedding后的维度)。在这里作者采用的是效果稍微好一丁点的<a href="http://arxiv.org/abs/1611.01604" target="_blank" rel="noopener">DCN</a>模型，区别在于它又算了一个对$S$每一列softmax normalization的矩阵$\overline{\overline S} $从而得到query-context attention$B=\overline S \cdot \overline{\overline(S)}^T\cdot C^T$ 。</p>
+</li>
+<li><p><strong>Model Encoder Layer</strong>: 利用convolution+attention从整体上考虑context和query之间的关系。实际结构和Embedding Encoder Layer差不多，只是一共3个stack，每个stack里有7个block，每个block里卷积层数为2。3个stack之间共享权值。</p>
+</li>
+<li><p><strong>Output Layer</strong>: 这一层的具体结构可根据实际问题进行调整。在这里作者提出两个概率$p_t^1=softmax(W_1[M_0;M_1])$和$p_t^2=softmax(W_2[M_0;M_2])$分别表示context中的一个词是answer的首词和尾词的概率。loss function如下：</p>
+<script type="math/tex; mode=display">L(\theta) = -\frac1N \sum_i^N[log(p_{y_i^1}^1)+log(p_{y_i^2}^2)]</script><p>其中$y_i^1和y_i^2$为真实答案的首位词在context中的位置。</p>
+</li>
+</ol>
+<h1 id="DATA-AUGMENTATION"><a href="#DATA-AUGMENTATION" class="headerlink" title="DATA AUGMENTATION"></a>DATA AUGMENTATION</h1><p>$\qquad$作者主要通过两个翻译模型来进行数据增强(起了个名字叫Backtranslation)：一个将英语翻译成其他语言(1个句子变成$k$个句子，本文中$k=5$)，另一个将它所得的结果再翻译回英语(变成$k^2$个句子)。主要用了<a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noopener">Neural machine translation by jointly learning to align and translate</a>中提出的attention-based neural machine translation model，搭建了4层的模型，代码和处理方法来自<a href="https://github.com/tensorflow/nmt" target="_blank" rel="noopener">Neural machine translation (seq2seq) tutorial.</a>。同时，也有人通过paraphrasing techniques为QA系统做数据增强<a href="https://arxiv.org/abs/1708.06022" target="_blank" rel="noopener">Learning to paraphrase for question answering</a>。</p>
+<p>​    一个训练对包括$(d,q,a)$，其中$d$是一个很多句子组成的段落，可以抽取出$q$对应的回答$a$。训练时，将$d$和$a$同时更换为相似语句并训练q对应于$a’$。这样做的问题是，更换后的$d’$可能已经不再包含更换后的$a’$了。作者通过char-level 2-gram，选出$a’$中与$a$最相近的句子作为新的answer。</p>
+<p>$\qquad$实际上，data augmentation的效果还可以做到更好。一方面，通过更好的翻译模型我们能够得到更高质量的结果(显然在长句中，翻译的表现更差；考虑可以将长句拆分成短句再分别翻译)。另一方面，在beam search decoding<strong>【这啥】</strong>的时候采样可以提高数据增强的多样性；<a href="https://arxiv.org/abs/1709.02828" target="_blank" rel="noopener">swap</a>的方法(把词换成同类型的其他词)也可以帮助我们获得更多样的数据，但效果一般；还可以把句子中的某些词换成近义词增强多样性；还有人利用生成模型生成更多questions，但是经过验证这种方法效果甚微。</p>
+<h1 id="EXPERIMENTS"><a href="#EXPERIMENTS" class="headerlink" title="EXPERIMENTS"></a>EXPERIMENTS</h1><h3 id="实验细节："><a href="#实验细节：" class="headerlink" title="实验细节："></a>实验细节：</h3><ol>
+<li>context长250词左右，超过400长的丢弃；问题一般10词左右；回答最长30词；</li>
+<li>训练中按照context长度分batch并调整padding的长度；</li>
+<li>用了两种regularization：①在所有变量上加$L_2$decay；字、词embedding、层间上加dropout；每个encoder模块上使用stochastic depth method对layer进行dropout。</li>
+<li>exponential moving average所有trainable variable。</li>
+<li>optimizer：ADAM(参数原文给出)；batch size、time step等原文均给出；</li>
+</ol>
+<h3 id="实验结果："><a href="#实验结果：" class="headerlink" title="实验结果："></a>实验结果：</h3><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG320.png" width="80%"></p>
+<p>$\qquad$可以看出不加data augmentation时QANet的效果其实和之前是相近的，而多倍的augmentation对无论是EM还是F1都有很大贡献。当然了，之所以augment这么多倍还是跑得起来还是仰仗之前的速度。</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG323.png"></p>
+<p>$\qquad$可以看出贡献度分别是：self-attention(2.8/2.7)，convolution(1.4/1.3)，data augmentation(1.5/1.1)。当原文：英-法-英：英-德-英 = 3:1:1时效果最好。</p>
 
           
         
