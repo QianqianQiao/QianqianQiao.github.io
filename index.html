@@ -337,9 +337,9 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 <script type="math/tex; mode=display">L(\theta) = -\frac1N \sum_i^N[log(p_{y_i^1}^1)+log(p_{y_i^2}^2)]</script><p>其中$y_i^1和y_i^2$为真实答案的首位词在context中的位置。</p>
 </li>
 </ol>
-<h1 id="DATA-AUGMENTATION"><a href="#DATA-AUGMENTATION" class="headerlink" title="DATA AUGMENTATION"></a>DATA AUGMENTATION</h1><p>$\qquad$作者主要通过两个翻译模型来进行数据增强(起了个名字叫Backtranslation)：一个将英语翻译成其他语言(1个句子变成$k$个句子，本文中$k=5$)，另一个将它所得的结果再翻译回英语(变成$k^2$个句子)。主要用了<a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noopener">Neural machine translation by jointly learning to align and translate</a>中提出的attention-based neural machine translation model，搭建了4层的模型，代码和处理方法来自<a href="https://github.com/tensorflow/nmt" target="_blank" rel="noopener">Neural machine translation (seq2seq) tutorial.</a>。同时，也有人通过paraphrasing techniques为QA系统做数据增强<a href="https://arxiv.org/abs/1708.06022" target="_blank" rel="noopener">Learning to paraphrase for question answering</a>。</p>
-<p>​    一个训练对包括$(d,q,a)$，其中$d$是一个很多句子组成的段落，可以抽取出$q$对应的回答$a$。训练时，将$d$和$a$同时更换为相似语句并训练q对应于$a’$。这样做的问题是，更换后的$d’$可能已经不再包含更换后的$a’$了。作者通过char-level 2-gram，选出$a’$中与$a$最相近的句子作为新的answer。</p>
-<p>$\qquad$实际上，data augmentation的效果还可以做到更好。一方面，通过更好的翻译模型我们能够得到更高质量的结果(显然在长句中，翻译的表现更差；考虑可以将长句拆分成短句再分别翻译)。另一方面，在beam search decoding<strong>【这啥】</strong>的时候采样可以提高数据增强的多样性；<a href="https://arxiv.org/abs/1709.02828" target="_blank" rel="noopener">swap</a>的方法(把词换成同类型的其他词)也可以帮助我们获得更多样的数据，但效果一般；还可以把句子中的某些词换成近义词增强多样性；还有人利用生成模型生成更多questions，但是经过验证这种方法效果甚微。</p>
+<h1 id="DATA-AUGMENTATION"><a href="#DATA-AUGMENTATION" class="headerlink" title="DATA AUGMENTATION"></a>DATA AUGMENTATION</h1><p>$\qquad$作者主要通过两个翻译模型来进行数据增强(起了个名字叫Backtranslation)：一个将英语翻译成其他语言(1个句子变成$k$个句子，本文中$k=5$)，另一个将它所得的结果再翻译回英语(变成$k^2$个句子)。主要用了<a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noopener">Neural machine translation by jointly learning to align and translate</a>中提出的attention-based neural machine translation model，搭建了4层的模型，代码和处理方法来自<a href="https://github.com/tensorflow/nmt" target="_blank" rel="noopener">Neural machine translation (seq2seq) tutorial.</a>。</p>
+<p>$\qquad$原本一个训练对包括$(d,q,a)$，其中$d$是一个很多句子组成的段落，可以抽取出$q$对应的回答$a$。训练时，将$d$和$a$同时更换为相似语句并训练q对应于$a’$。这样做的问题是，更换后的$d’$可能已经不再包含更换后的$a’$了。作者通过char-level 2-gram，选出$a’$中与$a$最相近的句子作为新的answer。</p>
+<p>$\qquad$实际上，data augmentation的效果还可以做到更好。一方面，通过更好的翻译模型我们能够得到更高质量的结果(显然在长句中，翻译的表现更差；考虑可以将长句拆分成短句再分别翻译)。另一方面，在beam search decoding<strong>【这啥】</strong>的时候采样可以提高数据增强的多样性；<a href="https://arxiv.org/abs/1709.02828" target="_blank" rel="noopener">swap</a>的方法(把词换成同类型的其他词)也可以帮助我们获得更多样的数据，但效果一般；还可以把句子中的某些词换成近义词增强多样性；还有人利用生成模型生成更多questions，但是经过验证这种方法效果甚微。同时，也有人通过paraphrasing techniques为QA系统做数据增强<a href="https://arxiv.org/abs/1708.06022" target="_blank" rel="noopener">Learning to paraphrase for question answering</a>。</p>
 <h1 id="EXPERIMENTS"><a href="#EXPERIMENTS" class="headerlink" title="EXPERIMENTS"></a>EXPERIMENTS</h1><h3 id="实验细节："><a href="#实验细节：" class="headerlink" title="实验细节："></a>实验细节：</h3><ol>
 <li>context长250词左右，超过400长的丢弃；问题一般10词左右；回答最长30词；</li>
 <li>训练中按照context长度分batch并调整padding的长度；</li>
@@ -418,7 +418,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/12/3try/" itemprop="url">cs224: 1. Introduction to NLP</a></h1>
+                <a class="post-title-link" href="/2018/10/12/3try/" itemprop="url">[课程笔记]cs224: 1. Introduction to NLP</a></h1>
         
 
         <div class="post-meta">
@@ -541,7 +541,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/11/First-try/" itemprop="url">Word Embedding: CBOW, skip-gram and fasttext.</a></h1>
+                <a class="post-title-link" href="/2018/10/11/First-try/" itemprop="url">[课程笔记]cs:224 2. Word Embedding: CBOW, skip-gram, fasttext and GloVe.</a></h1>
         
 
         <div class="post-meta">
@@ -596,12 +596,12 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
             <h1 id="Natural-Language-Processing-NLP"><a href="#Natural-Language-Processing-NLP" class="headerlink" title="Natural Language Processing(NLP)"></a>Natural Language Processing(NLP)</h1><p>$\qquad$想要让机器理解人类的语言的过程，就像教一个孩子说话一样。</p>
 <p>$\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成了统计规律(大力出奇迹)，学法语，就像是规则+较少的数据，虽然说得不像中文那样好，但也很大限度上发挥了那一点数据的价值。</p>
 <p>$\qquad$然而，想让蠢萌的机器一下子学会长长的句子们，还是有点难。学起汉语还要分词，下次回学校一定要抓个学汉语的瑞士人，问问他们是怎么学会的。信息量一时半会也未必能足够，尤其是面对特殊领域问题时；辞海又那么大，想要用数学去表示一个词也不容易。不用数学表示可不可以呢？毕竟我们在识字的时候，也没有什么向量不向量的。曾经，以规则约束确实是nlp的主流力量。然而，世界上有那么多词，除了规则外有那么多“固定搭配”，请多少专家才能总结好所有的规则呢。</p>
-<h1 id="Word-Embedding"><a href="#Word-Embedding" class="headerlink" title="Word Embedding"></a>Word Embedding</h1><p>$\qquad$这么多令人头疼的问题，不如从词的向量化看起。我刚开始实习的时候，最先用到的就是fasttext，毕竟现在的主流方法还是把其他问题转化到数学空间里。</p>
-<p>$\qquad$理想上，我们希望构建这样一个空间：一个能够表征所有词的空间，同时通过这个空间的度量来完成词的度量。最简单的方法无异于：忽略上下文的顺序，取出每个词来，对每个词的有无进行判断从而表示一句话。但这样的向量维数也太高了吧！简单，压缩一下。当然，是不能直接去压缩前面的超大向量的，这样softmax时的分母负担很大。目前比较好的做法是，利用神经网络直接随机初始化，然后根据词之间的信息迭代生成向量。根据对词的信息的利用方法，主要分为cbow和skip-gram两类。<br>$\qquad$<em>顺带一提，softmax的命名由来：作为normalization工具，’max’是因为它增强了较大值使其占比更高，soft是因为它还保留了小值部分，使其不变为0.</em></p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG316.png" alt="word2vec_all"></p>
-<h2 id="CBOW-amp-skip-gram"><a href="#CBOW-amp-skip-gram" class="headerlink" title="CBOW &amp; skip-gram"></a>CBOW &amp; skip-gram</h2><p>$\qquad$cbow通过词左右的邻居的信息来预测词本身，skip-gram正好相反，用一个词的信息预测旁边的邻居。这个“预测”讲起来其实有点误导，因为在训练的过程中，被预测的词是已知的，也就是“老师”，而预测别人的词是需要通过GD修正的，是真正的“学生”。所以说在cbow中，通过中间词“老师”的教导，相邻的“学生们”学到了它们应有的表达形式。每个学生最后的成果如何呢？这就要看它天生和多少老师相邻了(它本身的出现频率)。纵览全文，每个词都做了一次老师，辐射了一次知识，复杂度为O(W) [记W为文本的总词数]。skip-gram的阵容则显得豪华一点：每次都由旁边的一票老师们分别开一次小灶，获得的知识当然更多，所得的结果更加准确。但是需要的时间毫无疑问也更久一点，复杂度为O(WC) [记2C为每个词的邻居数]。</p>
+<p>$\qquad$这么多令人头疼的问题，不如从词的向量化看起。我刚开始实习的时候，最先用到的就是fasttext，毕竟现在的主流方法还是把其他问题转化到数学空间里。</p>
+<p>$\qquad$理想上，我们希望构建这样一个空间：一个能够表征所有词的空间，同时通过这个空间的度量来完成词的度量。最简单的方法无异于：忽略上下文的顺序，取出每个词来，对每个词的有无进行判断从而表示一句话。但这样的向量维数也太高了吧！简单，压缩一下。当然，是不能直接去压缩前面的超大向量的，我们可以另辟蹊径。目前比较好的做法是，利用神经网络直接随机初始化，然后根据词之间的信息迭代生成向量。根据对词的信息的利用方法，主要分为cbow和skip-gram两类。</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG311.png" alt="word2vec_all"></p>
+<h1 id="CBOW-amp-skip-gram"><a href="#CBOW-amp-skip-gram" class="headerlink" title="CBOW &amp; skip-gram"></a>CBOW &amp; skip-gram</h1><p>$\qquad$cbow通过词左右的邻居的信息来预测词本身，skip-gram正好相反，用一个词的信息预测旁边的邻居。这个“预测”讲起来其实有点误导，因为在训练的过程中，被预测的词是已知的，也就是“老师”，而预测别人的词是需要通过GD修正的，是真正的“学生”。所以说在cbow中，通过中间词“老师”的教导，相邻的“学生们”学到了它们应有的表达形式。每个学生最后的成果如何呢？这就要看它天生和多少老师相邻了(它本身的出现频率)。纵览全文，每个词都做了一次老师，辐射了一次知识，复杂度为O(W) [记W为文本的总词数]。skip-gram的阵容则显得豪华一点：每次都由旁边的一票老师们分别开一次小灶，获得的知识当然更多，所得的结果更加准确。但是需要的时间毫无疑问也更久一点，复杂度为O(WC) [记2C为每个词的邻居数]。</p>
 <p>$\qquad$选好教学方式，下面的就是怎么教的问题了。从多到一，最直接的想法就是线性映射，最好直接算个加和或平均数，直接走一圈滑动平均滤波器，最后再来个softmax完事。然而没那么简单，这个softmax不是那么好算。为了改进这一问题，目前有两种主要的方法：Hierarchical Softmax 和 Negative Sampling。</p>
-<h3 id="Hierarchical-Softmax"><a href="#Hierarchical-Softmax" class="headerlink" title="Hierarchical Softmax"></a>Hierarchical Softmax</h3><p>$\qquad$既然softmax这么难算，不如想个办法减小它的计算量。Hierarchical softmax就是出于这样一种想法，利用霍夫曼树(Huffman Tree)来替代softmax完成从projection layer到output layer的映射。对于从input layer到projection layer，则依旧采取取平均数的方法。</p>
+<h2 id="Hierarchical-Softmax"><a href="#Hierarchical-Softmax" class="headerlink" title="Hierarchical Softmax"></a>Hierarchical Softmax</h2><p>$\qquad$既然softmax这么难算，不如想个办法减小它的计算量。Hierarchical softmax就是出于这样一种想法，利用霍夫曼树(Huffman Tree)来替代softmax完成从projection layer到output layer的映射。对于从input layer到projection layer，则依旧采取取平均数的方法。</p>
 <p><img src="http://pgn2oyk5g.bkt.clouddn.com/20171128201141139.png" width="60%" height="60%"></p>
 <p>$\qquad$霍夫曼树(第一次接触是某家公司笔试编程题，结果我稀里糊涂用dict做出来了，印象很深)，是一种能够高效得将整个文本编码为二进制的二叉树。它把出现次数最小的部分两两合并，最终得到一颗树；从根开始到叶子结点(词)，每次向左为0向右为1(cbow中相反，左为1而右为0)。这样，出现频率高的词编码较短，找起来更快；频率低的词则相对较慢。对于cbow来说，我们先将平均得到的向量送入霍夫曼树中，通过参数为它选定path，引导预测结果至中心词对应的叶子结点。霍夫曼树中的每一个结点对各个输入d到底是向左还是向右，这是我们重点需要训练的参数之一，另一个参数是输入量。</p>
 <p>$\qquad$接下来就是具体计算了。记$w$为输入词的向量，$x_w$为$w$对应的隐层结果，$\theta_i^w$为w路径中非叶子结点的参数，$l^w$为$\theta_i^w$的个数，$d_i^w\in \{0,1\}$为对应结点的值，则：</p>
@@ -622,7 +622,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 <p>$\qquad$Hierarchical Softmax将隐层到词的距离缩短到了$log(W)$。然而在最坏的情况(词非常生僻)下，它的表现可能并不尽如人意。</p>
 </li>
 </ul>
-<h3 id="Negative-Sampling"><a href="#Negative-Sampling" class="headerlink" title="Negative Sampling"></a>Negative Sampling</h3><p>$\qquad$负采样则采取了另一种思路。对于一个有大量正样本及其对应标签的数据集，想要创造负样本其实很简单：把样本和标签错个位，他们就都对不上号了。实际应用中为了考虑到样本的分布特性，采样方法会稍微复杂一点：对于文章中的词$w\in W$，它出现的概率(加了幂指数3/4,使低频词的概率增加)后为：$P(w) = \frac{count(w)^{3/4}}{\sum_{u \in W}count(u)^{3/4}}$；按照这个概率进行不放回随机抽样，即可得到负样本。如果需要的负样本数量较大，则可把原表复制几份进行抽样。这就相当于把一个总长为1，按概率分段的线条分成M等份($M\ge W$)，从中取出$neg$个位置。word2vec中，$M$的默认值为$10^8$。</p>
+<h2 id="Negative-Sampling"><a href="#Negative-Sampling" class="headerlink" title="Negative Sampling"></a>Negative Sampling</h2><p>$\qquad$负采样则采取了另一种思路。对于一个有大量正样本及其对应标签的数据集，想要创造负样本其实很简单：把样本和标签错个位，他们就都对不上号了。实际应用中为了考虑到样本的分布特性，采样方法会稍微复杂一点：对于文章中的词$w\in W$，它出现的概率(加了幂指数)后为：$P(w) = \frac{count(w)^{3/4}}{\sum_{u \in W}count(u)^{3/4}}$；按照这个概率进行不放回随机抽样，即可得到负样本。如果需要的负样本数量较大，则可把原表复制几份进行抽样。这就相当于把一个总长为1，按概率分段的线条分成M等份($M\ge W$)，从中取出$neg$个位置。word2vec中，$M$的默认值为$10^8$。</p>
 <p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG315.png" width="80%"></p>
 <p>$\qquad$有了正负样本和标签，我们可以得到需要最大化的函数为：</p>
 <script type="math/tex; mode=display">\prod_{i=0}^{neg}P(context(w_0),w_i) = \sigma(x_{w_0},\theta_{w_0}^T)\prod_{i=1}^{neg}(1-\sigma(x_{w_i},\theta_{w_i}^T))</script><p>$\qquad$对它求log取负，则得到了需要最小化的目标函数。通过Gradient Descendent优化参数和输入值，则可以得到所需要的向量。</p>
@@ -631,6 +631,57 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 <li>输入：fasttext不仅输入context window范围内的每个字，也输入它们组成的n-gram。因此，它对语句的前后顺序信息有了更多利用。在英文中，这种做法在morphology层面上大大改善了同源词的问题。</li>
 <li>输出：word2vec的霍夫曼树叶子结点为词，而fasttext中叶子结点为文本分类的label。这样做是因为fasttext设计的初衷是希望具备文本分类的功能，embedding算是一个“副产品”。(疑问：那用fasttext得到embedding的时候label怎么选呢？我认为此时还是与word2vec相同。只是加入更多信息的同时，fast-text的运算速度也增加了)。</li>
 </ul>
+<h1 id="Count-Based-Methods"><a href="#Count-Based-Methods" class="headerlink" title="Count Based Methods"></a>Count Based Methods</h1><p>$\qquad$可以看出，word2vec大体上的思想是在遍历时对每个词逐渐调整。在这个过程中，两个词“互为邻居”的次数很大程度上决定了最后的结果。那么我们为什么不直接建个矩阵来衡量词与词之间的co-occurance呢？当然可以。<strong>(这个想法好熟悉好像在computer vision里见过，有空翻下ppt)</strong>。至于什么叫做“互为邻居”，可以通过定义window的长度来限制(一般为5-10)。这种做法其实和word2vec有点像，它可以在一定程度上刻画出词的词性和语义。</p>
+<p>$\qquad$对于词汇量为$W$的语料，我们可以得到一个$W\times W$的协方差矩阵。那么问题来了：语料稍微一多，矩阵就变得巨大且sparse。咋办呢，降维呗，svd，降到25-1000还能接受。一些需要注意的小点：① 它他她之类的词就不看了(去停用词)；② 一个window内不同位置可以加权处理；③ 可以不用出现次数，而用pearson相关系数(值越大越相关)。不过这个方法也有缺点：当$W$很大时，SVD也不是那么好算的；出现新词的时候想加入矩阵相当麻烦。word2vec和count based method这两种方法的比较如下，可以看到它们各有优缺点：</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG326.png"></p>
+<h1 id="GloVe"><a href="#GloVe" class="headerlink" title="GloVe"></a>GloVe</h1><p>$\qquad$Word2Vec和Count Based Method各有优点，而有一种算法却可以把它们的优点结合起来，这就是GloVe(那为啥我们平时还用fasttext而不用它呢？好吧，据大佬说还是有人用的。另外大佬对于中文分词不准确的看法：别分了，直接上字向量)。这个算法很简洁，也很单纯，但是效果却很好。此算法的具体细节如下：</p>
+<p>$\qquad$首先算出Count Based Method中的共现矩阵$X$，其中$X_{ij}$为词$j$出现在词$i$上下文的次数，$X_{i}$为词$i$作为context的总次数，$P_{ij}=X_{ij}/X_i$为词$j$出现在词$i$上下文的概率(共现概率)，$w_i$为词$i$作为中心词时的词向量，$\tilde w_i$为词$i$作为context时的词向量。对于一个未知的词$k$，我们可以不直接看它和其他词的共现次数，而看那些共现词之间的概率比值(想起了协同过滤……)。举个栗子🌰：</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG327.png" width="80%"></p>
+<p>上面的概率计算使用的语料库是一个热动力学相关的语料库.</p>
+<ul>
+<li><p>对于和单词<strong>i=ice</strong>关联性强而和单词<strong>j=steam</strong>关联性弱的单词，比如<strong>k=solid</strong>,我们期望 $P_{ik}/P_{jk}$很大；</p>
+</li>
+<li><p>反之，对于和单词<strong>i=ice</strong>关联性弱而和单词<strong>j=steam</strong>关联性强的单词，我们期望比率很小，比如<strong>k=gas；</strong></p>
+</li>
+<li>对于词water和fashion这种和ice,steam都有关联的词，概率比率接近1</li>
+</ul>
+<p>$\qquad$两个词关系的强弱，可以通过比较他们和不同<strong>“探测词”(上面的solid和gas）</strong>的共现概率的比值来衡量。可以看出，概率的比率可以比原始的概率更好的衡量词语词之间的关联性。因此我们得到概率的比值： <script type="math/tex">F(w_i,w_j,\widetilde w_k)=\frac{P_{ik}}{P_{jk}}</script></p>
+<p>$\qquad$ 考虑到$i,j$的对称性和左右向量标量的对应，可以改写为：<script type="math/tex">F((w_i-w_j)^T\tilde w_k)=\frac{P_{ik}}{P_{jk}}</script></p>
+<p>$\qquad$那么问题来了。左边这个式子中的$F$要怎么构造呢？它既要维护右边的比例关系，又得保持$i,j$和$k$之间的对称性(众所周知，中心词和背景词是对称的)。结论是：$F=exp$。由此可得：<script type="math/tex">F((w_i-w_j)^T\tilde w_k)=\frac{F(w_i^T\tilde w_k)}{F(w_j^T\tilde w_k)}=\frac{e^{w_i^T\tilde w_k}}{e^{w_j^T\tilde w_k}}=\frac{X_{ik}}{X_{jk}}</script></p>
+<p>$\qquad$加上bias，可得：<script type="math/tex">w_i^T\tilde w_k +b_i +\tilde b_k=log(X_{ik})</script></p>
+<p>$\qquad$由此可得cost function：</p>
+<script type="math/tex; mode=display">J = \sum_{i,j=1}^V f(X_{ij})(w_i^T\tilde w_j +b_i+\tilde b_j-logX_{ij})^2</script><p>$\qquad$其中$V$是词典的大小，$f$是用来控制比重的weighting function，满足：</p>
+<ul>
+<li><p>$f(0)=0$ ;</p>
+</li>
+<li><p>$f(x)$应该是一个非递减函数以便稀有的共现不至于overweight；</p>
+</li>
+<li><p>对于足够大的x，$f(x)$应该足够小以便频繁的共现不至于overweight；</p>
+</li>
+</ul>
+<p>$\qquad$最终得到$f$的形式为：</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG330.png" width="50%"></p>
+<p>$\qquad$最终得到$w_i,\tilde w_i$，相加即为词$i$的最佳词向量表示。</p>
+<p>$\qquad$GloVe看上去是极好了，训练快，适应大规模数据，同时能够在小数据集上表现良好。</p>
+<h1 id="Evaluation-of-word-embedding"><a href="#Evaluation-of-word-embedding" class="headerlink" title="Evaluation of word embedding"></a>Evaluation of word embedding</h1><ol>
+<li>评价embedding本身</li>
+</ol>
+<ul>
+<li>看词向量在一个小任务上的表现(算几个相关词的cos，或把embedding画出来看看)</li>
+<li>计算速度</li>
+<li>可解释性</li>
+<li>还是要看实际问题</li>
+</ul>
+<ol>
+<li>评价embedding在应用场景下的表现</li>
+</ol>
+<ul>
+<li>看实际问题中的表现</li>
+<li>着重关注accuracy</li>
+<li>系统的作用域</li>
+<li>如果换成另一种变差了：那这种更好</li>
+</ul>
+<p>$\qquad$根据研究结论：300维的词向量最好，对于GloVe来说窗口长度为8最好。train更久会更好，但多于一定次数后效果增长不大；用wikipedia训练比用新闻语料训练更好(因为口语化的词更多？)；对于歧义问题，可以先对一个词的各种window作cluster，每种cluster搞自己的向量。</p>
 
           
         
