@@ -303,7 +303,30 @@
       
         
           
-            
+            <h1 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h1><p>$\qquad$ 近年来，句子转换的模型大多数都基于复杂的recurrent或convolutional network(RNN, LSTM, GRU etc.)。为了减少RNN的计算量，很多组织如ConvS2S、ByteNet采用卷积层来计算输入和输出之间的latent space。然而这些方法都是建立在对输入信号的分布有一些假设的基础上的，比如说ConvS2S假设是线性的，ByteNet假设是log的。这种假设对于隔得比较远的点来说误差更大。然而本文模型中的multi-head机制很好得规避了这个问题。google团队单靠attention层实现了一个机器翻译模型Transformer，并且在不同规模的公开数据集上都有良好的表现。 </p>
+<h1 id="MODEL-ARCHITECTURE"><a href="#MODEL-ARCHITECTURE" class="headerlink" title="MODEL ARCHITECTURE"></a>MODEL ARCHITECTURE</h1><h2 id="Encoder-and-Decoder-Stacks"><a href="#Encoder-and-Decoder-Stacks" class="headerlink" title="Encoder and Decoder Stacks"></a>Encoder and Decoder Stacks</h2><p>$\qquad$纵观以往的seq2seq系统，皆为input space $ x$ —encoder—&gt; latent space $z$ —decoder—&gt; output space $y$ 的形式。Transformer的大体结构也是如此。下图清晰得表明了Transformer的结构，其中左边一堆是encoder，右边是decoder。细节上，左右均包含6个block(N=6)，每个block里的layer之间采用residual的方法连接，并且每一层之后都有layer normalization(即：$output=LayerNorm(x+Sublayer(x))$)。所有的outputdimension为512。</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG331.png" width="60%"></p>
+<h2 id="Attention"><a href="#Attention" class="headerlink" title="Attention"></a>Attention</h2><p>$\qquad$ Attention，本质上来说是想学习出两句话之间词与词的关系。它们可以是不同的两句话，通过attention来找出哪些词是相互对应的（比如机器翻译时有的词顺序调换；文本摘要时只需要其中一些词；阅读理解时可以把context作为一个句子，query连起来作为一个长句）；也可以是同一句话，来看长句中上下文之间的对应关系（比如说长从句中的指代关系，如下面左图所示，its对应前面的law）。假设这两个句子分别是A和B，那么理所当然的，我们希望建立这样一个矩阵，它能告诉我B中每个词和A中每个词之间的联系程度（如下面右图所示）。用这个矩阵适当调整输入的句子，可以帮助我们的系统得到更好的结果。</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG336.png" width="80%"></p>
+<p>$\qquad$本文中主要用的是self-attention机制，也就是自己和自己比较，得到上下文关系。记一个词embedding的维度为$d_{model}$，一句话最长(其他padding)为$n$个词；那么一个句子embedding后为$X\in \bold R^{n\times d_{model}}$；我们把比较的两个句子一个叫做Query，它由原句作线性变换得到，记作$Q\in \bold R^{n\times d_k}$；一个叫做Key，也由原句作线性变换得到，记作$K\in \bold R^{n\times d_k}$；显然在self-attention中他们是互相对称的，两句的角色可以互换，因此维度相同。通过比较他们两我们可以得到$n\times n$的权重矩阵，然后用这个矩阵来调整输入的句子。这个被调整的句子记作$V \in \bold R^{n\times d_v}$，也由原句线性变换得到，调整后的句子记作$Z\in \bold R^{n\times d_v}$。一般情况下$d_k,d_v&lt;d_{model}$，在原文中$d_{model}=512, d_k=d_v=64$。(至于为什么这三个句子不直接用原句而非要线性变换一下，我认为是为了增强模型的拟合能力，同时降维加快计算，另外在multi-head时增强多样性)。</p>
+<p>$\qquad$定义好了大体流程，接着我们需要知道详细的计算方法：1. 怎么从$q$和$k$得到$n\times n$的权重矩阵？(原文中说这个求解过程叫compatibility function，我没理解这个词怎么来的) 2. 得到权重矩阵之后怎么用它来调整原句？</p>
+<h3 id="求权重矩阵：Scaled-Dot-Product-Attention"><a href="#求权重矩阵：Scaled-Dot-Product-Attention" class="headerlink" title="求权重矩阵：Scaled Dot-Product Attention"></a>求权重矩阵：Scaled Dot-Product Attention</h3><p>$\qquad$这篇文章中主要提到了两种方法：dot(矩阵点积)或addictive attention(一层全连层)。下图所示为点积法的过程：</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG340.png"></p>
+<p>$\qquad$整个过程可以表示为：</p>
+<script type="math/tex; mode=display">Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt {d_k}})V</script><p>$\qquad$理论上，dot-product attention和addictive attention的复杂度差不多。但是实际上由于矩阵运算的成熟，dot-product的方法无论在时间复杂度上还是空间复杂度上表现都优异很多。不过当$d_k$很大时点积求得的数也很大，对后面的softmax造成压力。因此我们点积完先归一化（减去均值除以标准差）再作softmax。而addictive attention就没有这个scaling的问题。</p>
+<p>$\qquad$<em>备注：假设$q\in \bold R^{d_k}$和$q\in \bold R^{d_k}$是均值为0方差为1的随机变量，那么点积所得结果$q\cdot k=\sum_{i=1}^{d_k}q_i k_i$的中值为0，方差为$d_k。$</em></p>
+<h3 id="如何调整原句：Multi-head-Attention"><a href="#如何调整原句：Multi-head-Attention" class="headerlink" title="如何调整原句：Multi-head Attention"></a>如何调整原句：Multi-head Attention</h3><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG338.png"></p>
+<p>$\qquad$上面得到的$Z$其实已经可以说是一个调整过的句子了。如果我们把$h$设为1，即$d_k=d_v=d_{model}$，那么它的维度就是$n\times d_{model}$，和原句保持一致了。但是作者团队发现，如果多投影几次$K,Q,V$，每次都有新发现。那不如降低$d_k,d_v$的维度，多投几次，最后再把结果拼起来线性变换一下（线性变换可真多呀）。最后维度还是和原句一样，而且复杂度也和一次性投完差不多，但是这种multi-head的方法效果更好。</p>
+<h3 id="Transformer中attention层的具体细节"><a href="#Transformer中attention层的具体细节" class="headerlink" title="Transformer中attention层的具体细节"></a>Transformer中attention层的具体细节</h3><p>以上是multi-head attention的通用结构，它在Transformer中具体用在三处：</p>
+<ul>
+<li><p>在encoder的self-attention层中，所有的key，query，value都来自上一层encoder的输出。每一个encoder block都利用了之前block所得结果中所有位置上的信息。</p>
+</li>
+<li><p>decoder中的Masked Multi-head Attention层，利用前面decoder block中所有位置上的信息，得到query。为了让我们的query仅从前面的已知的词得出，完全不受后面词的影响，可以加一个mask，也就是把矩阵中对应位置的结果设置为$- \infin$。比如，输入“我爱喝可乐”，在翻译出“I like”之后，attention层根据“I like”学习出query(比如后面应该接一个名词)，从encoder结果中学习出key和value（比如喝）。此时mask避免了后面“drink cola”对这一级的干扰。</p>
+</li>
+<li>在decoder的encoder-decoder attention层，query为上一层decoder的输出，key和value来自encoder的输出。它又可以学习到输入在所有位置上的信息。</li>
+</ul>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG342.png" width="80%"></p>
+
           
         
       
