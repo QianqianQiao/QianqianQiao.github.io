@@ -304,7 +304,7 @@
         
           
             <h1 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h1><p>$\qquad$ 近年来，句子转换的模型大多数都基于复杂的recurrent或convolutional network(RNN, LSTM, GRU etc.)。为了减少RNN的计算量，很多组织如ConvS2S、ByteNet采用卷积层来计算输入和输出之间的latent space。然而这些方法都是建立在对输入信号的分布有一些假设的基础上的，比如说ConvS2S假设是线性的，ByteNet假设是log的。这种假设对于隔得比较远的点来说误差更大。然而本文模型中的multi-head机制很好得规避了这个问题。google团队单靠attention层实现了一个机器翻译模型Transformer，并且在不同规模的公开数据集上都有良好的表现。 </p>
-<h1 id="MODEL-ARCHITECTURE"><a href="#MODEL-ARCHITECTURE" class="headerlink" title="MODEL ARCHITECTURE"></a>MODEL ARCHITECTURE</h1><h2 id="Encoder-and-Decoder-Stacks"><a href="#Encoder-and-Decoder-Stacks" class="headerlink" title="Encoder and Decoder Stacks"></a>Encoder and Decoder Stacks</h2><p>$\qquad$纵观以往的seq2seq系统，皆为input space $ x$ —encoder—&gt; latent space $z$ —decoder—&gt; output space $y$ 的形式。Transformer的大体结构也是如此。下图清晰得表明了Transformer的结构，其中左边一堆是encoder，右边是decoder。细节上，左右均包含6个block(N=6)，每个block里的layer之间采用residual的方法连接，并且每一层之后都有layer normalization(即：$output=LayerNorm(x+Sublayer(x))$)。所有的outputdimension为512。</p>
+<h1 id="MODEL-ARCHITECTURE"><a href="#MODEL-ARCHITECTURE" class="headerlink" title="MODEL ARCHITECTURE"></a>MODEL ARCHITECTURE</h1><h2 id="Encoder-and-Decoder-Stacks"><a href="#Encoder-and-Decoder-Stacks" class="headerlink" title="Encoder and Decoder Stacks"></a>Encoder and Decoder Stacks</h2><p>$\qquad$纵观以往的seq2seq系统，皆为input space $ x$ —encoder—&gt; latent space $z$ —decoder—&gt; output space $y$ 的形式。Transformer的大体结构也是如此。下图清晰得表明了Transformer的结构，其中左边一堆是encoder，右边是decoder。细节上，左右均包含6个block(N=6)，每个block里的layer之间采用residual的方法连接，并且每一层之后都有layer normalization(即：$output=LayerNorm(x+Sublayer(x))$)。所有的outputdimension为512。训练时，我们把原句从encoder的input端输入进去，得到encode之后的输出。第一次将这一输出作为decode的输入，在最后一个softmax后计算出第一个词为对应词的概率（softmax输出的维度为词典的维度）。之后每次将这个概率输入decoder，一直得到对应的整句话。在每次使用decoder的过程中，encoder所得结果都会输入其中（在后面的图示中会有详细介绍）。</p>
 <p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG331.png" width="60%"></p>
 <h2 id="Attention"><a href="#Attention" class="headerlink" title="Attention"></a>Attention</h2><p>$\qquad$ Attention，本质上来说是想学习出两句话之间词与词的关系。它们可以是不同的两句话，通过attention来找出哪些词是相互对应的（比如机器翻译时有的词顺序调换；文本摘要时只需要其中一些词；阅读理解时可以把context作为一个句子，query连起来作为一个长句）；也可以是同一句话，来看长句中上下文之间的对应关系（比如说长从句中的指代关系，如下面左图所示，its对应前面的law）。假设这两个句子分别是A和B，那么理所当然的，我们希望建立这样一个矩阵，它能告诉我B中每个词和A中每个词之间的联系程度（如下面右图所示）。用这个矩阵适当调整输入的句子，可以帮助我们的系统得到更好的结果。</p>
 <p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG336.png" width="80%"></p>
@@ -313,7 +313,7 @@
 <h3 id="求权重矩阵：Scaled-Dot-Product-Attention"><a href="#求权重矩阵：Scaled-Dot-Product-Attention" class="headerlink" title="求权重矩阵：Scaled Dot-Product Attention"></a>求权重矩阵：Scaled Dot-Product Attention</h3><p>$\qquad$这篇文章中主要提到了两种方法：dot(矩阵点积)或addictive attention(一层全连层)。下图所示为点积法的过程：</p>
 <p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG340.png"></p>
 <p>$\qquad$整个过程可以表示为：</p>
-<script type="math/tex; mode=display">Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt {d_k}})V</script><p>$\qquad$理论上，dot-product attention和addictive attention的复杂度差不多。但是实际上由于矩阵运算的成熟，dot-product的方法无论在时间复杂度上还是空间复杂度上表现都优异很多。不过当$d_k$很大时点积求得的数也很大，对后面的softmax造成压力。因此我们点积完先归一化（减去均值除以标准差）再作softmax。而addictive attention就没有这个scaling的问题。</p>
+<script type="math/tex; mode=display">Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt {d_k}})V</script><p>$\qquad$理论上，dot-product attention和addictive attention的复杂度差不多。但是实际上由于矩阵运算的成熟，dot-product的方法无论在时间复杂度上还是空间复杂度上表现都优异很多。不过当$d_k$很大时点积求得的数也很大，在softmax中的对应点梯度将很小。因此我们点积完先归一化（减去均值除以标准差）再作softmax。而addictive attention就没有这个scaling的问题。</p>
 <p>$\qquad$<em>备注：假设$q\in \bold R^{d_k}$和$q\in \bold R^{d_k}$是均值为0方差为1的随机变量，那么点积所得结果$q\cdot k=\sum_{i=1}^{d_k}q_i k_i$的中值为0，方差为$d_k。$</em></p>
 <h3 id="如何调整原句：Multi-head-Attention"><a href="#如何调整原句：Multi-head-Attention" class="headerlink" title="如何调整原句：Multi-head Attention"></a>如何调整原句：Multi-head Attention</h3><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG338.png"></p>
 <p>$\qquad$上面得到的$Z$其实已经可以说是一个调整过的句子了。如果我们把$h$设为1，即$d_k=d_v=d_{model}$，那么它的维度就是$n\times d_{model}$，和原句保持一致了。但是作者团队发现，如果多投影几次$K,Q,V$，每次都有新发现。那不如降低$d_k,d_v$的维度，多投几次，最后再把结果拼起来线性变换一下（线性变换可真多呀）。最后维度还是和原句一样，而且复杂度也和一次性投完差不多，但是这种multi-head的方法效果更好。</p>
@@ -321,11 +321,34 @@
 <ul>
 <li><p>在encoder的self-attention层中，所有的key，query，value都来自上一层encoder的输出。每一个encoder block都利用了之前block所得结果中所有位置上的信息。</p>
 </li>
-<li><p>decoder中的Masked Multi-head Attention层，利用前面decoder block中所有位置上的信息，得到query。为了让我们的query仅从前面的已知的词得出，完全不受后面词的影响，可以加一个mask，也就是把矩阵中对应位置的结果设置为$- \infin$。比如，输入“我爱喝可乐”，在翻译出“I like”之后，attention层根据“I like”学习出query(比如后面应该接一个名词)，从encoder结果中学习出key和value（比如喝）。此时mask避免了后面“drink cola”对这一级的干扰。</p>
+<li><p>decoder中的Masked Multi-head Attention层，利用前面decoder block中所有位置上的信息，得到query。为了让我们的query仅从前面的已知的词得出，完全不受后面词的影响，可以加一个mask，也就是把矩阵中对应位置的结果设置为$- \infin$。比如，输入“我爱喝可乐”，在翻译出“I like”之后，attention层根据“I like”学习出query(next-token probability)(比如后面应该接一个名词)，从encoder结果中学习出key和value（比如喝）。此时mask避免了后面“drink cola”对这一级的干扰。</p>
 </li>
 <li>在decoder的encoder-decoder attention层，query为上一层decoder的输出，key和value来自encoder的输出。它又可以学习到输入在所有位置上的信息。</li>
 </ul>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG342.png" width="80%"></p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG345.png" width="80%"></p>
+<h2 id="Position-wise-Feed-Forward-Network"><a href="#Position-wise-Feed-Forward-Network" class="headerlink" title="Position-wise Feed-Forward Network"></a>Position-wise Feed-Forward Network</h2><p>$\qquad$图中的Feed-Forward Network，先将$d_{model}=512$线性变换为$d_{ff}=2048$再变换回512：</p>
+<script type="math/tex; mode=display">FFN(x)=max(0,xW_1+b_1)W_2+b_2</script><p>$\qquad$和RNN不同的是，每次进入这个网络的是一个句子整体所得结果，因此可以看作是对一个句子中所有词作feed-forward。这里作者说相当于用$1\times 1$的kernel做两次convolution，我其实不太明白（是先用4个kernel拼成2048？然后再pooling回来？）。原代码中直接用两个全连层实现。</p>
+<h2 id="Positional-Encoding"><a href="#Positional-Encoding" class="headerlink" title="Positional Encoding"></a>Positional Encoding</h2><p>$\qquad$由于这个模型没有像recurrence那样能够表征顺序的结构，作者考虑用positional encoding将位置信息加入输入数据中。具体做法是将下面两个式子所得的值（如图所示）与原输入相加。</p>
+<script type="math/tex; mode=display">PE_{pos, 2i}=sin(pos/10000^{2i/d_{model}})</script><script type="math/tex; mode=display">PE_{pos, 2i+1}=cos(pos/10000^{2i/d_{model}})</script><p> $\qquad$其中pos表示词的位置，i表示embedding中第i维，$d_{model}$表示embedding的维度。作者的想法是这么简单的两个式子，神经网络应该能够轻松得将它学习出来并且作为一个特征。这张图的每一行代表一个词，每一列代表一个维度。从左边的部分可以看出，综合不同维度的信息，这种方式还是可以比较好得对不同位置编码。右半边几乎看不到编码的信息，我猜测可能是因为，只要有一半左右维度上编过码了就足以区分位置了，剩下一半维度可以不编？</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG344.jpeg"></p>
+<p>$\qquad$关于位置编码，作者还尝试了<a href="https://arxiv.org/abs/1705.03122" target="_blank" rel="noopener">learned positional embedding</a>的方法，所得结果几乎相同。作者最终选择了这种正弦曲线编码的方式是因为，这种方式还适用于test中句子比train中长的情况。</p>
+<h1 id="self-attention-的好处都有啥"><a href="#self-attention-的好处都有啥" class="headerlink" title="self-attention 的好处都有啥"></a>self-attention 的好处都有啥</h1><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG346.png"></p>
+<ul>
+<li><p>每一层的复杂度：可以看到，当句子长度很长的时候，self-attention的复杂度飞升。主要是因为它需要算一个$n\times n$的矩阵，当$n$太大时自然不利。但是实际应用时这种情况是不可避免的，比如阅读理解中的context在几百词左右。</p>
+<p><em>为此提出了一种改进restricted version，就是每个词只考虑和旁边r个邻居的attention。这种做法减小了复杂度，但增加了dependency的长度。</em></p>
+</li>
+<li><p>并行：在encoder端显然每次是直接进一整个句子；在decoder端，训练时可以一次性输入整句。</p>
+</li>
+<li><p>long dependency：想要知道A词和B词之间的attention权重时，RNN的方法需要按顺序遍历一边，因此复杂度可达$O(n)$；CNN没有对输入输出句的每个position之间建立联系，尤其是dilated convolution更慢；而本文这种模型，由于attention是按照矩阵存好的，每次只要去相应位置上查就行，复杂度为$O(1)$（矩阵和链表？）</p>
+</li>
+</ul>
+<h1 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h1><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG10.png"></p>
+<p>$\qquad$可以看到结果和convS2S差不太多，不过人家快呀。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>一个讲得比较好的网友博客：<a href="https://www.52coding.com.cn/index.php?/Articles/single/66" target="_blank" rel="noopener">刘贺的博客</a></p>
+<p>国外友人的详细图解：<a href="https://jalammar.github.io/illustrated-transformer/" target="_blank" rel="noopener">Illustrated-Transformer</a>此人博客还蛮有趣的，图解了很多～有空看看</p>
+<p>知乎上写的比较好的一篇：<a href="https://zhuanlan.zhihu.com/p/39034683" target="_blank" rel="noopener">魔法抓的学习笔记</a></p>
+<p>google源码github：<a href="https://github.com/tensorflow/tensor2tensor" target="_blank" rel="noopener">tensor2tensor源码</a></p>
+<p>哈佛的pytorch实现版：<a href="http://nlp.seas.harvard.edu/2018/04/03/attention.html" target="_blank" rel="noopener">The Annotated Transformer</a></p>
 
           
         
