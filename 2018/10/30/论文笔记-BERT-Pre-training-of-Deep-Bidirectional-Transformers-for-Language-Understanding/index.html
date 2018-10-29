@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="QQQ前言$\qquad$最近这个模型刚出来，感觉nlp领域的格局大震动，我还是先蹲着看看大家如何讨论以及google会不会又搞什么新花样好了（毕竟这模型也不是谁想跑就能跑起来的……）。持续关注一下，估计几个月内还要更新这篇233 Introduction$\qquad$目前在nlp领域，pre-trained language model在很多任务中都表现得十分出色。比如，需要对整句分析来判断句">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[论文笔记]BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding">
+<meta property="og:url" content="http://yoursite.com/2018/10/30/论文笔记-BERT-Pre-training-of-Deep-Bidirectional-Transformers-for-Language-Understanding/index.html">
+<meta property="og:site_name" content="僻静小院">
+<meta property="og:description" content="QQQ前言$\qquad$最近这个模型刚出来，感觉nlp领域的格局大震动，我还是先蹲着看看大家如何讨论以及google会不会又搞什么新花样好了（毕竟这模型也不是谁想跑就能跑起来的……）。持续关注一下，估计几个月内还要更新这篇233 Introduction$\qquad$目前在nlp领域，pre-trained language model在很多任务中都表现得十分出色。比如，需要对整句分析来判断句">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG348.png">
+<meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG347.png">
+<meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG351.png">
+<meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/20180512031820416.png">
+<meta property="og:updated_time" content="2018-10-29T16:40:59.492Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[论文笔记]BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding">
+<meta name="twitter:description" content="QQQ前言$\qquad$最近这个模型刚出来，感觉nlp领域的格局大震动，我还是先蹲着看看大家如何讨论以及google会不会又搞什么新花样好了（毕竟这模型也不是谁想跑就能跑起来的……）。持续关注一下，估计几个月内还要更新这篇233 Introduction$\qquad$目前在nlp领域，pre-trained language model在很多任务中都表现得十分出色。比如，需要对整句分析来判断句">
+<meta name="twitter:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG348.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/30/论文笔记-BERT-Pre-training-of-Deep-Bidirectional-Transformers-for-Language-Understanding/"/>
+
+
+
+
+
+  <title>[论文笔记]BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding | 僻静小院</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">僻静小院</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">(.· o` ) o O</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/30/论文笔记-BERT-Pre-training-of-Deep-Bidirectional-Transformers-for-Language-Understanding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="qqq">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="僻静小院">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[论文笔记]BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-30T12:35:30+08:00">
+                2018-10-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="QQQ前言"><a href="#QQQ前言" class="headerlink" title="QQQ前言"></a>QQQ前言</h1><p>$\qquad$最近这个模型刚出来，感觉nlp领域的格局大震动，我还是先蹲着看看大家如何讨论以及google会不会又搞什么新花样好了（毕竟这模型也不是谁想跑就能跑起来的……）。持续关注一下，估计几个月内还要更新这篇233</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>$\qquad$目前在nlp领域，pre-trained language model在很多任务中都表现得十分出色。比如，需要对整句分析来判断句子关系的任务：natural language inference（根据前提premise判断假说hypothesis和它的关系：矛盾contradiction or 蕴含entailment）、paraphrasing（复述）；token层面需要生成某些特定token的任务：named entity recognition、阅读理解等。</p>
+<p>$\qquad$目前将预训练语言表征应用于实际下游任务存在两种策略：基于特征的策略（feature-based）和微调策略（fine-tuning）。基于特征的策略（如 ELMo）使用将预训练表征作为额外特征的任务专用架构。微调策略（如生成预训练 Transformer (OpenAI GPT)）引入了任务特定最小参数，通过简单地微调预训练参数在下游任务中进行训练。在之前的研究中，两种策略在预训练期间使用相同的目标函数，利用单向语言模型来学习通用语言表征。</p>
+<p>$\qquad$然而，google团队认为现有的的技术完全没有发挥出这两种策略的优势，尤其是fine-tuning。这其中主要是因为现有的language model大多是单向的，每个token只能考虑到它前面词带来的信息，后面的词却被忽略了。比如说在阅读理解这种语境中，上下文都很重要，不能只看上文不看下文。于是作者提出了一种新的预训练模型来克服这种单向局限：masked language model(MLM)，它随机将input中的一些词mask掉；然后让模型根据这个被mask词的上下文来预测原词的id（完形填空？）。</p>
+<h1 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h1><h2 id="Model-Architecture-OpenAI-GPT"><a href="#Model-Architecture-OpenAI-GPT" class="headerlink" title="Model Architecture - OpenAI_GPT"></a>Model Architecture - OpenAI_GPT</h2><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG348.png"></p>
+<p>$\qquad$关于模型结构，BERT完全沿用了Transformer的源码。为了通过比较来突出信息双向利用带来的便利，BERT和<a href="https://www.cs.ubc.ca/~amuham01/LING530/papers/radford2018improving.pdf" target="_blank" rel="noopener">OpenAI GPT(generative pre-training)</a>保持高度一致。我们来看一下OpenAI GPT的具体结构：</p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG347.png"></p>
+<p>$\qquad$利用12个transformer block（一个block就是一个multi-head attention+一个feed forward），在不同类别任务中采取不同的输入方式（delim：delimiter，定界符: $, &lt;\s&gt;, &lt;\e&gt;）。GPT采用semi-supervised的方式训练：先用无监督方法pre-train模型(词层面上训练word embedding比较好，句子层面就sentence embedding)，再用监督方法train我们需要的结果。具体过程：</p>
+<h3 id="Unsupervised-pre-training"><a href="#Unsupervised-pre-training" class="headerlink" title="Unsupervised pre-training"></a>Unsupervised pre-training</h3><p>$\qquad$通过语言模型来训练。假设给定语料（无标签）为$U={u_1,…,u_n}$，设$k$为窗口长度，$P$为条件概率，$\Theta$为网络模型的参数，通过神经网络进行最大似然估计（用前$k$个词预测接下来一个词）$U=(u_{-k,…,u_{-1}})$为一个词对应的context，$n$为transformer的层数，$W_e$为embedding matrix，$W_p$为position embedding matrix：</p>
+<script type="math/tex; mode=display">L_1(U)=\sum_ilogP(u_i|u_{u-k},...,u_{i-1};\Theta)</script><script type="math/tex; mode=display">h_0=UW_e+W_p</script><script type="math/tex; mode=display">h_l=transformer\_block(h_{l-1})\quad \forall i\in [i,n]</script><script type="math/tex; mode=display">P(u)=softmax(h_nW_e^T)</script><h3 id="Supervised-fine-tuning"><a href="#Supervised-fine-tuning" class="headerlink" title="Supervised fine-tuning"></a>Supervised fine-tuning</h3><p>$\qquad$设label集为$C$，每次输入包含多个词语$x^1,…,x^m$，对应label为$y$。记transformer最后一层的activation为$h_l^m$，那么再进一个线性层后得到的概率预测为：</p>
+<script type="math/tex; mode=display">P(y|x^1,...,x^m)=softmax(h_l^mW_y)</script><p>$\qquad$对它加起来求最大似然，就得到了objective function $L_2(C)$。对于利用auxiliary objective的方法，就是将$L_1(C)+L_2(C)$作为目标函数。实际上，我们只需要fine-tune $W_y$ 和eliminater的embedding就可以了。</p>
+<h2 id="Model-Architecture-BERT"><a href="#Model-Architecture-BERT" class="headerlink" title="Model Architecture - BERT"></a>Model Architecture - BERT</h2><p>$\qquad$BERT和OpenAI GPT的最大区别在于它用的是双向的数据。（这……不就是把原来的masked multi-head attention中的mask去掉了吗？！）记transformer的block数为$L$，在不同block之间流通时的hidden size为$H$，multi-head中head的数量为$A$，feed-forward中间那一层的大小为$4H$，定义两种模型大小：</p>
+<ul>
+<li>$BERT_{BASE}:L=12,H=768,A=12,Parameters=110M$</li>
+<li>$BERT_{LARGE}:L=24,H=1024,A=16,Parameters=340M$</li>
+</ul>
+<h2 id="Input-Representation"><a href="#Input-Representation" class="headerlink" title="Input Representation"></a>Input Representation</h2><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG351.png"></p>
+<p>$\qquad$可见输入主要由三部分相加而成，分别为1. 原词的word embedding(word piece, 最长512词，多句时所有句子加起来不超过512词)；2. Segment embedding用来分开不同的句子（或者可以在不同句子之间加分隔符来区分）；3. 通过神经网络学习到的position embedding。</p>
+<h2 id="Pre-training-Tasks"><a href="#Pre-training-Tasks" class="headerlink" title="Pre-training Tasks"></a>Pre-training Tasks</h2><h3 id="Masked-LM"><a href="#Masked-LM" class="headerlink" title="Masked LM"></a>Masked LM</h3><p>$\qquad$这一节主要讨论的是，用什么任务去pre-training这个模型，能够得到更好的效果。在OpenAI GPT中用的是language model，通过前面的词预测下一个词。但是这种模型在这里却不适用了，因为标准的language model只能是从左往右或从右往左，预测下一个词，而无法同时双向预测。因此我们考虑盖住文本中的一个词（用[mask]这个token代替被遮盖词），让模型通过两侧的语境做完形填空。</p>
+<p>$\qquad$然而这种方法有两个缺点：</p>
+<ul>
+<li>在真正训练的时候，不会出现[mask]这样的文本。为此作者把需要被mask的词按照80%概率变成[mask]，10%概率变成另一个随机词，10%的概率不变来处理。对于transformer来说，它并没有被告知到底哪个词是被mask掉的，所以它必须学习每个单词的替换可能性。</li>
+<li>在每个batch中只有15%的词会被预测，这导致它收敛得会更慢一些，需要更多的训练次数。不过总体来说这种方法还是利大于弊。</li>
+</ul>
+<h3 id="Next-Sentence-Prediction"><a href="#Next-Sentence-Prediction" class="headerlink" title="Next Sentence Prediction"></a>Next Sentence Prediction</h3><p>$\qquad$对于需要输入多句话的任务，采用“预测下一句是什么”的方法，如果是原本的下一句则label为IsNext，如果不是(从语料库中随机选句)则label为NotNext。正负label占比为1:1，最终训练准确率为97%-98%。以下为label的示例：</p>
+<p><em>Input = [CLS] the man went to [MASK] store [SEP]</em></p>
+<p><em>he bought a gallon [MASK] milk [SEP]</em></p>
+<p><em>Label = IsNext</em></p>
+<p><em>Input = [CLS] the man [MASK] to the store [SEP]</em></p>
+<p><em>penguin [MASK] are flight ##less birds [SEP]</em></p>
+<p><em>Label = NotNext</em></p>
+<h2 id="Pre-training-Procedure"><a href="#Pre-training-Procedure" class="headerlink" title="Pre-training Procedure"></a>Pre-training Procedure</h2><p>$\qquad$如上所述，补充了一些细节：用英文wiki训练，optimizer=Adam，用了gelu而不是relu等；</p>
+<p>$\qquad$<em>补充：由于relu缺乏probabilistic interpretation，有人提出了GELU(Gaussian Error Linear Unit)，定义为</em>$GELU(x)=xP(X&lt;x),X～N(\mu, \sigma^2)$，<em>在多个数据集中表现好于RELU和ELU。顺带一提RELU大名：Recitified Linear Unit。示意图如下：</em></p>
+<p><img src="http://pgn2oyk5g.bkt.clouddn.com/20180512031820416.png" width="60%"></p>
+<h2 id="Fine-tuning-Procedure"><a href="#Fine-tuning-Procedure" class="headerlink" title="Fine-tuning Procedure"></a>Fine-tuning Procedure</h2><p>$\qquad$同补充一些细节，同时提到：fine-tuning真的很快，而且大数据集需要tune的更少，对parameter更不敏感。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/23/论文笔记-Attention-is-All-You-Need/" rel="next" title="[论文笔记]Attention is All You Need">
+                <i class="fa fa-chevron-left"></i> [论文笔记]Attention is All You Need
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">qqq</p>
+              <p class="site-description motion-element" itemprop="description">records</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#QQQ前言"><span class="nav-number">1.</span> <span class="nav-text">QQQ前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BERT"><span class="nav-number">3.</span> <span class="nav-text">BERT</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Model-Architecture-OpenAI-GPT"><span class="nav-number">3.1.</span> <span class="nav-text">Model Architecture - OpenAI_GPT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Unsupervised-pre-training"><span class="nav-number">3.1.1.</span> <span class="nav-text">Unsupervised pre-training</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Supervised-fine-tuning"><span class="nav-number">3.1.2.</span> <span class="nav-text">Supervised fine-tuning</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Model-Architecture-BERT"><span class="nav-number">3.2.</span> <span class="nav-text">Model Architecture - BERT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Input-Representation"><span class="nav-number">3.3.</span> <span class="nav-text">Input Representation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pre-training-Tasks"><span class="nav-number">3.4.</span> <span class="nav-text">Pre-training Tasks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Masked-LM"><span class="nav-number">3.4.1.</span> <span class="nav-text">Masked LM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Next-Sentence-Prediction"><span class="nav-number">3.4.2.</span> <span class="nav-text">Next Sentence Prediction</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pre-training-Procedure"><span class="nav-number">3.5.</span> <span class="nav-text">Pre-training Procedure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fine-tuning-Procedure"><span class="nav-number">3.6.</span> <span class="nav-text">Fine-tuning Procedure</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">qqq</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
