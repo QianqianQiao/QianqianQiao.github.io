@@ -122,7 +122,7 @@
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG326.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG327.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG330.png">
-<meta property="og:updated_time" content="2018-10-22T03:57:14.595Z">
+<meta property="og:updated_time" content="2018-10-30T07:06:52.989Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[课程笔记]cs:224 2. Word Embedding: CBOW, skip-gram, fasttext and GloVe.">
 <meta name="twitter:description" content="Natural Language Processing(NLP)$\qquad$想要让机器理解人类的语言的过程，就像教一个孩子说话一样。 $\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成">
@@ -241,9 +241,25 @@
         
         
           
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
           <li class="menu-item menu-item-archives">
     <a href="/archives/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
   </li>
 
       
@@ -353,7 +369,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-21 23:57:14" itemprop="dateModified" datetime="2018-10-21T23:57:14-04:00">2018-10-21</time>
+                <time title="修改时间：2018-10-30 03:06:52" itemprop="dateModified" datetime="2018-10-30T03:06:52-04:00">2018-10-30</time>
               
             
           </span>
@@ -387,7 +403,7 @@
 
       
         <h1 id="Natural-Language-Processing-NLP"><a href="#Natural-Language-Processing-NLP" class="headerlink" title="Natural Language Processing(NLP)"></a>Natural Language Processing(NLP)</h1><p>$\qquad$想要让机器理解人类的语言的过程，就像教一个孩子说话一样。</p>
-<p>$\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成了统计规律(大力出奇迹)，学法语，就像是规则+较少的数据，虽然说得不像中文那样好，但也很大限度上发挥了那一点数据的价值。</p>
+<p>$\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成了统计规律(大力出奇迹)，学法语，就像是规则+较少的数据，虽然说得不像中文那样好，但也很大限度上发挥了那一点数据的价值。<br><a id="more"></a></p>
 <p>$\qquad$然而，想让蠢萌的机器一下子学会长长的句子们，还是有点难。学起汉语还要分词，下次回学校一定要抓个学汉语的瑞士人，问问他们是怎么学会的。信息量一时半会也未必能足够，尤其是面对特殊领域问题时；辞海又那么大，想要用数学去表示一个词也不容易。不用数学表示可不可以呢？毕竟我们在识字的时候，也没有什么向量不向量的。曾经，以规则约束确实是nlp的主流力量。然而，世界上有那么多词，除了规则外有那么多“固定搭配”，请多少专家才能总结好所有的规则呢。</p>
 <p>$\qquad$这么多令人头疼的问题，不如从词的向量化看起。我刚开始实习的时候，最先用到的就是fasttext，毕竟现在的主流方法还是把其他问题转化到数学空间里。</p>
 <p>$\qquad$理想上，我们希望构建这样一个空间：一个能够表征所有词的空间，同时通过这个空间的度量来完成词的度量。最简单的方法无异于：忽略上下文的顺序，取出每个词来，对每个词的有无进行判断从而表示一句话。但这样的向量维数也太高了吧！简单，压缩一下。当然，是不能直接去压缩前面的超大向量的，我们可以另辟蹊径。目前比较好的做法是，利用神经网络直接随机初始化，然后根据词之间的信息迭代生成向量。根据对词的信息的利用方法，主要分为cbow和skip-gram两类。</p>
@@ -502,10 +518,6 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/09/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
@@ -584,7 +596,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -768,7 +780,67 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config("");
 </script>
@@ -787,38 +859,9 @@
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->
 
-
-
+    
   
 
-
-
-  
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
 
   
   

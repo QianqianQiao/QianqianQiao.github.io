@@ -108,21 +108,21 @@
 
 
 
-  <meta name="description" content="QQQ序言$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的QANet。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了BiDAF的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对dat">
+  <meta name="description" content="$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的QANet。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了BiDAF的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对data aug">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[论文笔记]QANet: Combining Local Convolution with Global Self-Attention for Reading Comprehension">
 <meta property="og:url" content="http://yoursite.com/2018/10/14/new/index.html">
 <meta property="og:site_name" content="僻静小院">
-<meta property="og:description" content="QQQ序言$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的QANet。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了BiDAF的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对dat">
+<meta property="og:description" content="$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的QANet。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了BiDAF的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对data aug">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG319.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG325.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG320.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG323.png">
-<meta property="og:updated_time" content="2018-10-21T08:08:38.074Z">
+<meta property="og:updated_time" content="2018-10-30T07:08:35.427Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[论文笔记]QANet: Combining Local Convolution with Global Self-Attention for Reading Comprehension">
-<meta name="twitter:description" content="QQQ序言$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的QANet。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了BiDAF的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对dat">
+<meta name="twitter:description" content="$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的QANet。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了BiDAF的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对data aug">
 <meta name="twitter:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG319.png">
 
 
@@ -238,9 +238,25 @@
         
         
           
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
           <li class="menu-item menu-item-archives">
     <a href="/archives/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
   </li>
 
       
@@ -350,7 +366,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-21 04:08:38" itemprop="dateModified" datetime="2018-10-21T04:08:38-04:00">2018-10-21</time>
+                <time title="修改时间：2018-10-30 03:08:35" itemprop="dateModified" datetime="2018-10-30T03:08:35-04:00">2018-10-30</time>
               
             
           </span>
@@ -383,8 +399,8 @@
       
 
       
-        <h1 id="QQQ序言"><a href="#QQQ序言" class="headerlink" title="QQQ序言"></a>QQQ序言</h1><p>$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的<a href="https://arxiv.org/abs/1804.09541" target="_blank" rel="noopener">QANet</a>。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了<a href="http://arxiv.org/
-abs/1611.01603" target="_blank" rel="noopener">BiDAF</a>的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对data augmentation，提升了指标。</p>
+        <p>$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的<a href="https://arxiv.org/abs/1804.09541" target="_blank" rel="noopener">QANet</a>。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了<a href="http://arxiv.org/
+abs/1611.01603" target="_blank" rel="noopener">BiDAF</a>的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对data augmentation，提升了指标。<br><a id="more"></a></p>
 <h1 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h1><p>$\qquad$ 目前，主流的端到端的阅读理解或QA模型为带attention的RNN，其中的代表如Bidirectional Attention Flow (BiDAF)。recurrent的部分负责读入sequential的数据，而attention的部分负责处理long-term的特征。但是这种模型的缺点是train/test的时候速度都很慢，不利于实时实时处理。因此作者提出了一种新的不需要RNN结构的QA模型QANet，从而在很大程度改进了QA模型的速度。这个模型用卷积负责学习局部特征，而self-attention负责全局特征。相比之前的模型它的速度更快，且在更长时间下能够得到更好的结果。</p>
 <p>$\qquad$在训练QANet的同时，作者对公开数据集SQuAD进行了data augmentation：将原语句翻译成法语和德语后再翻译成英语，从而得到同一句话的不同表示形式。从比较试验结果中可见，data augmentation对提升模型accuracy有极大的帮助。</p>
 <h1 id="THE-MODEL"><a href="#THE-MODEL" class="headerlink" title="THE MODEL"></a>THE MODEL</h1><p>$\qquad$<em>定义：记包含$n$词的背景知识段为$C={c_1…c_n}$，问句为$Q={q_1…q_m}$，其中问句的词全部来源于背景知识段；同时记原词和它的vector形式为$x$，$x\in C,Q$。</em></p>
@@ -540,7 +556,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -580,7 +596,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#QQQ序言"><span class="nav-number">1.</span> <span class="nav-text">QQQ序言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#INTRODUCTION"><span class="nav-number">2.</span> <span class="nav-text">INTRODUCTION</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#THE-MODEL"><span class="nav-number">3.</span> <span class="nav-text">THE MODEL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DATA-AUGMENTATION"><span class="nav-number">4.</span> <span class="nav-text">DATA AUGMENTATION</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EXPERIMENTS"><span class="nav-number">5.</span> <span class="nav-text">EXPERIMENTS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实验细节："><span class="nav-number">5.0.1.</span> <span class="nav-text">实验细节：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验结果："><span class="nav-number">5.0.2.</span> <span class="nav-text">实验结果：</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#INTRODUCTION"><span class="nav-number">1.</span> <span class="nav-text">INTRODUCTION</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#THE-MODEL"><span class="nav-number">2.</span> <span class="nav-text">THE MODEL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DATA-AUGMENTATION"><span class="nav-number">3.</span> <span class="nav-text">DATA AUGMENTATION</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EXPERIMENTS"><span class="nav-number">4.</span> <span class="nav-text">EXPERIMENTS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实验细节："><span class="nav-number">4.0.1.</span> <span class="nav-text">实验细节：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验结果："><span class="nav-number">4.0.2.</span> <span class="nav-text">实验结果：</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -724,7 +740,67 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config("");
 </script>
@@ -743,38 +819,9 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->
 
-
-
+    
   
 
-
-
-  
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
 
   
   

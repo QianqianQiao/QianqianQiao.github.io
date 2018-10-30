@@ -233,9 +233,25 @@
         
         
           
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
           <li class="menu-item menu-item-archives">
     <a href="/archives/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
   </li>
 
       
@@ -332,24 +348,12 @@
                 
               
 
-              <time title="创建时间：2018-10-30 00:35:30" itemprop="dateCreated datePublished" datetime="2018-10-30T00:35:30-04:00">2018-10-30</time>
+              <time title="创建时间：2018-10-30 00:35:30 / 修改时间：03:08:14" itemprop="dateCreated datePublished" datetime="2018-10-30T00:35:30-04:00">2018-10-30</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-29 12:40:59" itemprop="dateModified" datetime="2018-10-29T12:40:59-04:00">2018-10-29</time>
               
             
           </span>
@@ -383,44 +387,17 @@
 
       
         
+          <p>$\qquad$最近这个模型刚出来，感觉nlp领域的格局大震动，我还是先蹲着看看大家如何讨论以及google会不会又搞什么新花样好了（毕竟这模型也不是谁想跑就能跑起来的……）。持续关注一下，估计几个月内还要更新这篇233</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>$\qquad$目前在nlp领域，pre-trained language model在很多任务中都表现得十分出色。比如，需要对整句分析来判断句子关系的任务：natural language inference（根据前提premise判断假说hypothesis和它的关系：矛盾contradiction or 蕴含entailment）、paraphrasing（复述）；token层面需要生成某些特定token的任务：named entity recognition、阅读理解等。<br>
+          <!--noindex-->
           
-            <h1 id="QQQ前言"><a href="#QQQ前言" class="headerlink" title="QQQ前言"></a>QQQ前言</h1><p>$\qquad$最近这个模型刚出来，感觉nlp领域的格局大震动，我还是先蹲着看看大家如何讨论以及google会不会又搞什么新花样好了（毕竟这模型也不是谁想跑就能跑起来的……）。持续关注一下，估计几个月内还要更新这篇233</p>
-<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>$\qquad$目前在nlp领域，pre-trained language model在很多任务中都表现得十分出色。比如，需要对整句分析来判断句子关系的任务：natural language inference（根据前提premise判断假说hypothesis和它的关系：矛盾contradiction or 蕴含entailment）、paraphrasing（复述）；token层面需要生成某些特定token的任务：named entity recognition、阅读理解等。</p>
-<p>$\qquad$目前将预训练语言表征应用于实际下游任务存在两种策略：基于特征的策略（feature-based）和微调策略（fine-tuning）。基于特征的策略（如 ELMo）使用将预训练表征作为额外特征的任务专用架构。微调策略（如生成预训练 Transformer (OpenAI GPT)）引入了任务特定最小参数，通过简单地微调预训练参数在下游任务中进行训练。在之前的研究中，两种策略在预训练期间使用相同的目标函数，利用单向语言模型来学习通用语言表征。</p>
-<p>$\qquad$然而，google团队认为现有的的技术完全没有发挥出这两种策略的优势，尤其是fine-tuning。这其中主要是因为现有的language model大多是单向的，每个token只能考虑到它前面词带来的信息，后面的词却被忽略了。比如说在阅读理解这种语境中，上下文都很重要，不能只看上文不看下文。于是作者提出了一种新的预训练模型来克服这种单向局限：masked language model(MLM)，它随机将input中的一些词mask掉；然后让模型根据这个被mask词的上下文来预测原词的id（完形填空？）。</p>
-<h1 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h1><h2 id="Model-Architecture-OpenAI-GPT"><a href="#Model-Architecture-OpenAI-GPT" class="headerlink" title="Model Architecture - OpenAI_GPT"></a>Model Architecture - OpenAI_GPT</h2><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG348.png"></p>
-<p>$\qquad$关于模型结构，BERT完全沿用了Transformer的源码。为了通过比较来突出信息双向利用带来的便利，BERT和<a href="https://www.cs.ubc.ca/~amuham01/LING530/papers/radford2018improving.pdf" target="_blank" rel="noopener">OpenAI GPT(generative pre-training)</a>保持高度一致。我们来看一下OpenAI GPT的具体结构：</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG347.png"></p>
-<p>$\qquad$利用12个transformer block（一个block就是一个multi-head attention+一个feed forward），在不同类别任务中采取不同的输入方式（delim：delimiter，定界符: $, &lt;\s&gt;, &lt;\e&gt;）。GPT采用semi-supervised的方式训练：先用无监督方法pre-train模型(词层面上训练word embedding比较好，句子层面就sentence embedding)，再用监督方法train我们需要的结果。具体过程：</p>
-<h3 id="Unsupervised-pre-training"><a href="#Unsupervised-pre-training" class="headerlink" title="Unsupervised pre-training"></a>Unsupervised pre-training</h3><p>$\qquad$通过语言模型来训练。假设给定语料（无标签）为$U={u_1,…,u_n}$，设$k$为窗口长度，$P$为条件概率，$\Theta$为网络模型的参数，通过神经网络进行最大似然估计（用前$k$个词预测接下来一个词）$U=(u_{-k,…,u_{-1}})$为一个词对应的context，$n$为transformer的层数，$W_e$为embedding matrix，$W_p$为position embedding matrix：</p>
-<script type="math/tex; mode=display">L_1(U)=\sum_ilogP(u_i|u_{u-k},...,u_{i-1};\Theta)</script><script type="math/tex; mode=display">h_0=UW_e+W_p</script><script type="math/tex; mode=display">h_l=transformer\_block(h_{l-1})\quad \forall i\in [i,n]</script><script type="math/tex; mode=display">P(u)=softmax(h_nW_e^T)</script><h3 id="Supervised-fine-tuning"><a href="#Supervised-fine-tuning" class="headerlink" title="Supervised fine-tuning"></a>Supervised fine-tuning</h3><p>$\qquad$设label集为$C$，每次输入包含多个词语$x^1,…,x^m$，对应label为$y$。记transformer最后一层的activation为$h_l^m$，那么再进一个线性层后得到的概率预测为：</p>
-<script type="math/tex; mode=display">P(y|x^1,...,x^m)=softmax(h_l^mW_y)</script><p>$\qquad$对它加起来求最大似然，就得到了objective function $L_2(C)$。对于利用auxiliary objective的方法，就是将$L_1(C)+L_2(C)$作为目标函数。实际上，我们只需要fine-tune $W_y$ 和eliminater的embedding就可以了。</p>
-<h2 id="Model-Architecture-BERT"><a href="#Model-Architecture-BERT" class="headerlink" title="Model Architecture - BERT"></a>Model Architecture - BERT</h2><p>$\qquad$BERT和OpenAI GPT的最大区别在于它用的是双向的数据。（这……不就是把原来的masked multi-head attention中的mask去掉了吗？！）记transformer的block数为$L$，在不同block之间流通时的hidden size为$H$，multi-head中head的数量为$A$，feed-forward中间那一层的大小为$4H$，定义两种模型大小：</p>
-<ul>
-<li>$BERT_{BASE}:L=12,H=768,A=12,Parameters=110M$</li>
-<li>$BERT_{LARGE}:L=24,H=1024,A=16,Parameters=340M$</li>
-</ul>
-<h2 id="Input-Representation"><a href="#Input-Representation" class="headerlink" title="Input Representation"></a>Input Representation</h2><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG351.png"></p>
-<p>$\qquad$可见输入主要由三部分相加而成，分别为1. 原词的word embedding(word piece, 最长512词，多句时所有句子加起来不超过512词)；2. Segment embedding用来分开不同的句子（或者可以在不同句子之间加分隔符来区分）；3. 通过神经网络学习到的position embedding。</p>
-<h2 id="Pre-training-Tasks"><a href="#Pre-training-Tasks" class="headerlink" title="Pre-training Tasks"></a>Pre-training Tasks</h2><h3 id="Masked-LM"><a href="#Masked-LM" class="headerlink" title="Masked LM"></a>Masked LM</h3><p>$\qquad$这一节主要讨论的是，用什么任务去pre-training这个模型，能够得到更好的效果。在OpenAI GPT中用的是language model，通过前面的词预测下一个词。但是这种模型在这里却不适用了，因为标准的language model只能是从左往右或从右往左，预测下一个词，而无法同时双向预测。因此我们考虑盖住文本中的一个词（用[mask]这个token代替被遮盖词），让模型通过两侧的语境做完形填空。</p>
-<p>$\qquad$然而这种方法有两个缺点：</p>
-<ul>
-<li>在真正训练的时候，不会出现[mask]这样的文本。为此作者把需要被mask的词按照80%概率变成[mask]，10%概率变成另一个随机词，10%的概率不变来处理。对于transformer来说，它并没有被告知到底哪个词是被mask掉的，所以它必须学习每个单词的替换可能性。</li>
-<li>在每个batch中只有15%的词会被预测，这导致它收敛得会更慢一些，需要更多的训练次数。不过总体来说这种方法还是利大于弊。</li>
-</ul>
-<h3 id="Next-Sentence-Prediction"><a href="#Next-Sentence-Prediction" class="headerlink" title="Next Sentence Prediction"></a>Next Sentence Prediction</h3><p>$\qquad$对于需要输入多句话的任务，采用“预测下一句是什么”的方法，如果是原本的下一句则label为IsNext，如果不是(从语料库中随机选句)则label为NotNext。正负label占比为1:1，最终训练准确率为97%-98%。以下为label的示例：</p>
-<p><em>Input = [CLS] the man went to [MASK] store [SEP]</em></p>
-<p><em>he bought a gallon [MASK] milk [SEP]</em></p>
-<p><em>Label = IsNext</em></p>
-<p><em>Input = [CLS] the man [MASK] to the store [SEP]</em></p>
-<p><em>penguin [MASK] are flight ##less birds [SEP]</em></p>
-<p><em>Label = NotNext</em></p>
-<h2 id="Pre-training-Procedure"><a href="#Pre-training-Procedure" class="headerlink" title="Pre-training Procedure"></a>Pre-training Procedure</h2><p>$\qquad$如上所述，补充了一些细节：用英文wiki训练，optimizer=Adam，用了gelu而不是relu等；</p>
-<p>$\qquad$<em>补充：由于relu缺乏probabilistic interpretation，有人提出了GELU(Gaussian Error Linear Unit)，定义为</em>$GELU(x)=xP(X&lt;x),X～N(\mu, \sigma^2)$，<em>在多个数据集中表现好于RELU和ELU。顺带一提RELU大名：Recitified Linear Unit。示意图如下：</em></p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/20180512031820416.png" width="60%"></p>
-<h2 id="Fine-tuning-Procedure"><a href="#Fine-tuning-Procedure" class="headerlink" title="Fine-tuning Procedure"></a>Fine-tuning Procedure</h2><p>$\qquad$同补充一些细节，同时提到：fine-tuning真的很快，而且大数据集需要tune的更少，对parameter更不敏感。</p>
-
-          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/30/论文笔记-BERT-Pre-training-of-Deep-Bidirectional-Transformers-for-Language-Understanding/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+         
+          <!--/noindex-->
         
       
     </div>
@@ -535,7 +512,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-25 21:46:07" itemprop="dateModified" datetime="2018-10-25T21:46:07-04:00">2018-10-25</time>
+                <time title="修改时间：2018-10-30 03:08:29" itemprop="dateModified" datetime="2018-10-30T03:08:29-04:00">2018-10-30</time>
               
             
           </span>
@@ -569,55 +546,17 @@
 
       
         
+          <p>$\qquad$关于Transformer的始祖文章，感觉中文查到的资料鲜有整体讲得比较清(ruo)楚(zhi)的，故记下一篇写写自己的理解。</p>
+<h1 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h1><p>$\qquad$ 近年来，句子转换的模型大多数都基于复杂的recurrent或convolutional network(RNN, LSTM, GRU etc.)。为了减少RNN的计算量，很多模型如ConvS2S、ByteNet采用卷积层来计算输入和输出之间的latent space。然而这些方法都是建立在对输入信号的分布有一些假设的基础上的，比如说ConvS2S假设是线性的，ByteNet假设是log的。这种假设对于隔得比较远的点来说误差更大。然而本文模型中的multi-head机制很好得规避了这个问题。google团队单靠attention层实现了一个机器翻译模型Transformer，并且在不同规模的公开数据集上都有良好的表现。<br>
+          <!--noindex-->
           
-            <h1 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h1><p>$\qquad$ 近年来，句子转换的模型大多数都基于复杂的recurrent或convolutional network(RNN, LSTM, GRU etc.)。为了减少RNN的计算量，很多模型如ConvS2S、ByteNet采用卷积层来计算输入和输出之间的latent space。然而这些方法都是建立在对输入信号的分布有一些假设的基础上的，比如说ConvS2S假设是线性的，ByteNet假设是log的。这种假设对于隔得比较远的点来说误差更大。然而本文模型中的multi-head机制很好得规避了这个问题。google团队单靠attention层实现了一个机器翻译模型Transformer，并且在不同规模的公开数据集上都有良好的表现。 </p>
-<h1 id="MODEL-ARCHITECTURE"><a href="#MODEL-ARCHITECTURE" class="headerlink" title="MODEL ARCHITECTURE"></a>MODEL ARCHITECTURE</h1><h2 id="Encoder-and-Decoder-Stacks"><a href="#Encoder-and-Decoder-Stacks" class="headerlink" title="Encoder and Decoder Stacks"></a>Encoder and Decoder Stacks</h2><p>$\qquad$纵观以往的seq2seq系统，皆为input space $ x$ —encoder—&gt; latent space $z$ —decoder—&gt; output space $y$ 的形式。Transformer的大体结构也是如此。下图清晰得表明了Transformer的结构，其中左边一堆是encoder，右边是decoder。细节上，左右均包含6个block(N=6)，每个block里的layer之间采用residual的方法连接，并且每一层之后都有layer normalization(即：$output=LayerNorm(x+Sublayer(x))$)。所有的outputdimension为512。训练时，我们把原句从encoder的input端输入进去，得到encode之后的输出。第一次将这一输出作为decode的输入，在最后一个softmax后计算出第一个词的对应词的概率（softmax输出的维度为词典的维度）。之后每次将这个概率输入decoder，一直得到对应的整句话。在每次使用decoder的过程中，encoder所得结果都会输入其中（在后面的图示中会有详细介绍）。</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG331.png" width="60%"></p>
-<h2 id="Attention"><a href="#Attention" class="headerlink" title="Attention"></a>Attention</h2><p>$\qquad$ Attention，本质上来说是想学习出两句话之间词与词的关系。它们可以是不同的两句话，通过attention来找出哪些词是相互对应的（比如机器翻译时有的词顺序调换；文本摘要时只需要其中一些词；阅读理解时可以把context作为一个句子，query连起来作为一个长句）；也可以是同一句话，来看长句中上下文之间的对应关系（比如说长从句中的指代关系，如下面左图所示，its对应前面的law）。假设这两个句子分别是A和B，那么理所当然的，我们希望建立这样一个矩阵，它能告诉我B中每个词和A中每个词之间的联系程度（如下面右图所示）。用这个矩阵适当调整输入的句子，可以帮助我们的系统得到更好的结果。</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG336.png" width="80%"></p>
-<p>$\qquad$本文中主要用的是self-attention机制，也就是自己和自己比较，得到上下文关系。记一个词embedding的维度为$d_{model}$，一句话最长(其他padding)为$n$个词；那么一个句子embedding后为$X\in R^{n\times d_{model}}$；我们把比较的两个句子一个叫做Query，它由原句作线性变换得到，记作$Q\in  R^{n\times d_k}$；一个叫做Key，也由原句作线性变换得到，记作$K\in  R^{n\times d_k}$；显然在self-attention中他们是互相对称的，两句的角色可以互换，因此维度相同。通过比较他们两我们可以得到$n\times n$的权重矩阵，然后用这个矩阵来调整输入的句子。这个被调整的句子记作$V \in  R^{n\times d_v}$，也由原句线性变换得到，调整后的句子记作$Z\in  R^{n\times d_v}$。一般情况下$d_k,d_v&lt;d_{model}$，在原文中$d_{model}=512, d_k=d_v=64$。(至于为什么这三个句子不直接用原句而非要线性变换一下，我认为是为了增强模型的拟合能力，同时降维加快计算，另外在multi-head时增强多样性)。</p>
-<p>$\qquad$定义好了大体流程，接着我们需要知道详细的计算方法：1. 怎么从$q$和$k$得到$n\times n$的权重矩阵？(原文中说这个求解过程叫compatibility function，我没理解这个词怎么来的) 2. 得到权重矩阵之后怎么用它来调整原句？</p>
-<h3 id="求权重矩阵：Scaled-Dot-Product-Attention"><a href="#求权重矩阵：Scaled-Dot-Product-Attention" class="headerlink" title="求权重矩阵：Scaled Dot-Product Attention"></a>求权重矩阵：Scaled Dot-Product Attention</h3><p>$\qquad$这篇文章中主要提到了两种方法：dot(矩阵点积)或addictive attention(一层全连层)。下图所示为点积法的过程：</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG340.png"></p>
-<p>$\qquad$整个过程可以表示为：</p>
-<script type="math/tex; mode=display">Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt {d_k}})V</script><p>$\qquad$理论上，dot-product attention和addictive attention的复杂度差不多。但是实际上由于矩阵运算的成熟，dot-product的方法无论在时间复杂度上还是空间复杂度上表现都优异很多。不过当$d_k$很大时点积求得的数也很大，在softmax中的对应点梯度将很小。因此我们点积完先归一化（减去均值除以标准差）再作softmax。而addictive attention就没有这个scaling的问题。</p>
-<p>$\qquad$<em>备注：假设$q\in  R^{d_k}$和$q\in R^{d_k}$是均值为0方差为1的随机变量，那么点积所得结果$q\cdot k=\sum_{i=1}^{d_k}q_i k_i$的中值为0，方差为$d_k。$</em></p>
-<h3 id="如何调整原句：Multi-head-Attention"><a href="#如何调整原句：Multi-head-Attention" class="headerlink" title="如何调整原句：Multi-head Attention"></a>如何调整原句：Multi-head Attention</h3><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG338.png"></p>
-<p>$\qquad$上面得到的$Z$其实已经可以说是一个调整过的句子了。如果我们把$h$设为1，即$d_k=d_v=d_{model}$，那么它的维度就是$n\times d_{model}$，和原句保持一致了。但是作者团队发现，如果多投影几次$K,Q,V$，每次都有新发现。那不如降低$d_k,d_v$的维度，多投几次，最后再把结果拼起来线性变换一下（线性变换可真多呀）。最后维度还是和原句一样，而且复杂度也和一次性投完差不多，但是这种multi-head的方法效果更好。</p>
-<h3 id="Transformer中attention层的具体细节"><a href="#Transformer中attention层的具体细节" class="headerlink" title="Transformer中attention层的具体细节"></a>Transformer中attention层的具体细节</h3><p>以上是multi-head attention的通用结构，它在Transformer中具体用在三处：</p>
-<ul>
-<li><p>在encoder的self-attention层中，所有的key，query，value都来自上一层encoder的输出。每一个encoder block都利用了之前block所得结果中所有位置上的信息。</p>
-</li>
-<li><p>decoder中的Masked Multi-head Attention层，利用前面decoder block中所有位置上的信息，得到query。为了让我们的query仅从前面的已知的词得出，完全不受后面词的影响，可以加一个mask，也就是把矩阵中对应位置的结果设置为$- \infinity$。比如，输入“我爱喝可乐”，在翻译出“I like”之后，attention层根据“I like”学习出query(next-token probability)(比如后面应该接一个名词)，从encoder结果中学习出key和value（比如喝）。此时mask避免了后面“drink cola”对这一级的干扰。</p>
-</li>
-<li>在decoder的encoder-decoder attention层，query为上一层decoder的输出，key和value来自encoder的输出。它又可以学习到输入在所有位置上的信息。</li>
-</ul>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG345.png" width="80%"></p>
-<h2 id="Position-wise-Feed-Forward-Network"><a href="#Position-wise-Feed-Forward-Network" class="headerlink" title="Position-wise Feed-Forward Network"></a>Position-wise Feed-Forward Network</h2><p>$\qquad$图中的Feed-Forward Network，先将$d_{model}=512$线性变换为$d_{ff}=2048$再变换回512：</p>
-<script type="math/tex; mode=display">FFN(x)=max(0,xW_1+b_1)W_2+b_2</script><p>$\qquad$和RNN不同的是，每次进入这个网络的是一个句子整体所得结果，因此可以看作是对一个句子中所有词作feed-forward。这里作者说相当于用$1\times 1$的kernel做两次convolution，我其实不太明白（是先用4个kernel拼成2048？然后再pooling回来？）。原代码中直接用两个全连层实现。</p>
-<h2 id="Positional-Encoding"><a href="#Positional-Encoding" class="headerlink" title="Positional Encoding"></a>Positional Encoding</h2><p>$\qquad$由于这个模型没有像recurrence那样能够表征顺序的结构，作者考虑用positional encoding将位置信息加入输入数据中。具体做法是将下面两个式子所得的值（如图所示）与原输入相加。</p>
-<script type="math/tex; mode=display">PE_{pos, 2i}=sin(pos/10000^{2i/d_{model}})</script><script type="math/tex; mode=display">PE_{pos, 2i+1}=cos(pos/10000^{2i/d_{model}})</script><p> $\qquad$其中pos表示词的位置，i表示embedding中第i维，$d_{model}$表示embedding的维度。作者的想法是这么简单的两个式子，神经网络应该能够轻松得将它学习出来并且作为一个特征。这张图的每一行代表一个词，每一列代表一个维度。从左边的部分可以看出，综合不同维度的信息，这种方式还是可以比较好得对不同位置编码。右半边几乎看不到编码的信息，我猜测可能是因为，只要有一半左右维度上编过码了就足以区分位置了，剩下一半维度可以不编？</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG344.jpeg"></p>
-<p>$\qquad$关于位置编码，作者还尝试了<a href="https://arxiv.org/abs/1705.03122" target="_blank" rel="noopener">learned positional embedding</a>的方法，所得结果几乎相同。作者最终选择了这种正弦曲线编码的方式是因为，这种方式还适用于test中句子比train中长的情况。</p>
-<h1 id="self-attention-的好处都有啥"><a href="#self-attention-的好处都有啥" class="headerlink" title="self-attention 的好处都有啥"></a>self-attention 的好处都有啥</h1><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG346.png"></p>
-<ul>
-<li><p>每一层的复杂度：可以看到，当句子长度很长的时候，self-attention的复杂度飞升。主要是因为它需要算一个$n\times n$的矩阵，当$n$太大时自然不利。但是实际应用时这种情况是不可避免的，比如阅读理解中的context在几百词左右。</p>
-<p><em>为此提出了一种改进restricted version，就是每个词只考虑和旁边r个邻居的attention。这种做法减小了复杂度，但增加了dependency的长度。</em></p>
-</li>
-<li><p>并行：在encoder端显然每次是直接进一整个句子；在decoder端，训练时可以一次性输入整句。</p>
-</li>
-<li><p>long dependency：想要知道A词和B词之间的attention权重时，RNN的方法需要按顺序遍历一边，因此复杂度可达$O(n)$；CNN没有对输入输出句的每个position之间建立联系，尤其是dilated convolution更慢；而本文这种模型，由于attention是按照矩阵存好的，每次只要去相应位置上查就行，复杂度为$O(1)$（矩阵和链表？）</p>
-</li>
-</ul>
-<h1 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h1><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG10.png"></p>
-<p>$\qquad$可以看到结果和convS2S差不太多，不过人家快呀。</p>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>一个讲得比较好的网友博客：<a href="https://www.52coding.com.cn/index.php?/Articles/single/66" target="_blank" rel="noopener">刘贺的博客</a></p>
-<p>国外友人的详细图解：<a href="https://jalammar.github.io/illustrated-transformer/" target="_blank" rel="noopener">Illustrated-Transformer</a>此人博客还蛮有趣的，图解了很多～有空看看</p>
-<p>知乎上写的比较好的一篇：<a href="https://zhuanlan.zhihu.com/p/39034683" target="_blank" rel="noopener">魔法抓的学习笔记</a></p>
-<p>google源码github：<a href="https://github.com/tensorflow/tensor2tensor" target="_blank" rel="noopener">tensor2tensor源码</a></p>
-<p>哈佛的pytorch实现版：<a href="http://nlp.seas.harvard.edu/2018/04/03/attention.html" target="_blank" rel="noopener">The Annotated Transformer</a></p>
-
-          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/23/论文笔记-Attention-is-All-You-Need/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+         
+          <!--/noindex-->
         
       
     </div>
@@ -732,7 +671,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-21 04:08:38" itemprop="dateModified" datetime="2018-10-21T04:08:38-04:00">2018-10-21</time>
+                <time title="修改时间：2018-10-30 03:08:35" itemprop="dateModified" datetime="2018-10-30T03:08:35-04:00">2018-10-30</time>
               
             
           </span>
@@ -766,57 +705,17 @@
 
       
         
+          <p>$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的<a href="https://arxiv.org/abs/1804.09541" target="_blank" rel="noopener">QANet</a>。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了<a href="http://arxiv.org/
+abs/1611.01603" target="_blank" rel="noopener">BiDAF</a>的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对data augmentation，提升了指标。<br>
+          <!--noindex-->
           
-            <h1 id="QQQ序言"><a href="#QQQ序言" class="headerlink" title="QQQ序言"></a>QQQ序言</h1><p>$\qquad$本文主要介绍了18年在SQuAD数据集上表现很好的<a href="https://arxiv.org/abs/1804.09541" target="_blank" rel="noopener">QANet</a>。它主要针对的是在阅读理解中找到答案这一任务，通常原文长数百词，对应多个问题，每个问题的答案十分简短并可以在原文中找到原句。QANet大体上沿用了<a href="http://arxiv.org/
-abs/1611.01603" target="_blank" rel="noopener">BiDAF</a>的结构，主要的不同是1. 用了一个新颖的卷积代替了recurrent，用了self-attention。很大程度上加快了运行速度。2. 通过翻译的方法对data augmentation，提升了指标。</p>
-<h1 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h1><p>$\qquad$ 目前，主流的端到端的阅读理解或QA模型为带attention的RNN，其中的代表如Bidirectional Attention Flow (BiDAF)。recurrent的部分负责读入sequential的数据，而attention的部分负责处理long-term的特征。但是这种模型的缺点是train/test的时候速度都很慢，不利于实时实时处理。因此作者提出了一种新的不需要RNN结构的QA模型QANet，从而在很大程度改进了QA模型的速度。这个模型用卷积负责学习局部特征，而self-attention负责全局特征。相比之前的模型它的速度更快，且在更长时间下能够得到更好的结果。</p>
-<p>$\qquad$在训练QANet的同时，作者对公开数据集SQuAD进行了data augmentation：将原语句翻译成法语和德语后再翻译成英语，从而得到同一句话的不同表示形式。从比较试验结果中可见，data augmentation对提升模型accuracy有极大的帮助。</p>
-<h1 id="THE-MODEL"><a href="#THE-MODEL" class="headerlink" title="THE MODEL"></a>THE MODEL</h1><p>$\qquad$<em>定义：记包含$n$词的背景知识段为$C={c_1…c_n}$，问句为$Q={q_1…q_m}$，其中问句的词全部来源于背景知识段；同时记原词和它的vector形式为$x$，$x\in C,Q$。</em></p>
-<p>$\qquad$一般的阅读理解模型包括五部分：embedding layer, embedding encoder layer, context-query attention layer,model encoder layer和output layer。本文的创新之处在于，在embedding和modeling encoder layer中只用卷积和self-attention而没有用RNN(比只用self-attention$\uparrow$2.7F1)。这种做法的好处是，一方面可以并行处理输入数据，使得模型的速度大大加快；另一方面可以利用cnn已经成熟的regularization方法(比如layer dropout、stochastic depth)等($\uparrow$0.2F1)。模型的具体细节如下：</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG319.png"></p>
-<ol>
-<li><p><strong>Input Embedding Layer</strong>: 主要通过两种方法embedding。①：直接将词变成300维向量$x_w$。主要利用预先训练好的GloVe，其中没有包含到的词map到<unk>上并随机初始化。②：把每个字母变成200维向量后拼成词，每个词padding或truncating到16个字母的长度，然后在200维上每维取最大值再卷积得到$x_c$。最后得到$x$的embedding$[x_w;x_c]$，长度为500。</unk></p>
-</li>
-<li><p><strong>Embedding Encoder Layer</strong>: 首先通过一个1维卷积将每个词的500维向量映射为128维。采用一个embedding encoder block，主要由三部分组成: [convolution_layer * # + self-attention_layer + feed-forward_layer]。</p>
-<ol>
-<li><p>这三部分之前首先是一个position encoding，用两个不同的波来增强位置信息：<script type="math/tex">PE_{pos, 2i}=sin(pos/10000^{2i/d_{model}})</script> <script type="math/tex">PE_{pos, 2i+1}cos(pos/10000^{2i/d_{model}})</script> 其中pos表示词的位置，i表示embedding中第i维，$d_{model}$表示embedding的维度。所得结果与输入相加作为新的输入。</p>
-</li>
-<li><p>与传统的卷积层不同，本文用的是占空间更小的<a href="https://arxiv.org/abs/1610.02357" target="_blank" rel="noopener">depthwise separable convolution</a>。这种卷积的思想是：传统的卷积中，一个kernel对每个通道作一次卷积，然后各通道所得结果通过相加或pooling结合起来，最终1个kernel和n个channel结合得到1个channel的结果。这个kernel的任务很重：既要学习一个channel上的空间分布特征，还要学习channel之间的特征。因此提出一种办法来给不同的kernel分工：利用$1\times 1$的kernel卷一下(相当于只针对一个通道)。深度可分卷积先用$n\times n$的kernel对每个通道独立执行卷积，再用$1\times 1$的kernel学习通道之间的关系。实际上这两步的先后顺序对结果的影响应该不大。示意图如下：</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG325.png"></p>
-<p>本文中kernel_size = 7; num_filters = 128; 一个block中有4个卷积层。</p>
-</li>
-<li><p>self-attention部分采用了<a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">multi-head attention mechanism</a>。这种attention对input(query和keys)的每个位置计算所有位置加权和，算query和key的点积来衡量他们的相似度。num_head = 8。</p>
-</li>
-<li><p>每个这样的block整体构成了一个residual block，输出为$f(layernorm(x))+x$，维度为128。</p>
-</li>
-</ol>
-<p><em>复习：<strong>Batch Normalization [BN]</strong>：各个数据的同一维度normalization。这样同一维每次进神经网的差异不会太大，对梯度下降收敛速度有利。尤其适用于过完非线性层后的数据。然而训练的时候不可能对所有训练数据一次性算个方差，故衍生出小批次normalization。难以用于recurrent-network。<strong>Layer Normalization [LN]</strong>：和BN垂直，对同一数据或activation在全维度上normalization。可用于recurrent-network，但在cnn中少见。</em></p>
-</li>
-<li><p><strong>Context-Query Attention Layer</strong>: 目的是计算context和query之间的联系，找出其中的关键词语。用的是常见的标准模型。过程如下：首先用<a href="http://arxiv.org/
-abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每个context和query对的相似性得到相似矩阵$S\in \boldsymbol R ^{n\times m} $，然后用softmax对$S$的每一行normalize得到$\overline S$。$A=\overline S \cdot Q^T \in \boldsymbol R ^{n\times d}$即为所求的context-query attention($d$为一个词embedding后的维度)。在这里作者采用的是效果稍微好一丁点的<a href="http://arxiv.org/abs/1611.01604" target="_blank" rel="noopener">DCN</a>模型，区别在于它又算了一个对$S$每一列softmax normalization的矩阵$\overline{\overline S} $从而得到query-context attention$B=\overline S \cdot \overline{\overline(S)}^T\cdot C^T$ 。</p>
-</li>
-<li><p><strong>Model Encoder Layer</strong>: 利用convolution+attention从整体上考虑context和query之间的关系。实际结构和Embedding Encoder Layer差不多，只是一共3个stack，每个stack里有7个block，每个block里卷积层数为2。3个stack之间共享权值。</p>
-</li>
-<li><p><strong>Output Layer</strong>: 这一层的具体结构可根据实际问题进行调整。在这里作者提出两个概率$p_t^1=softmax(W_1[M_0;M_1])$和$p_t^2=softmax(W_2[M_0;M_2])$分别表示context中的一个词是answer的首词和尾词的概率。loss function如下：</p>
-<script type="math/tex; mode=display">L(\theta) = -\frac1N \sum_i^N[log(p_{y_i^1}^1)+log(p_{y_i^2}^2)]</script><p>其中$y_i^1和y_i^2$为真实答案的首位词在context中的位置。</p>
-</li>
-</ol>
-<h1 id="DATA-AUGMENTATION"><a href="#DATA-AUGMENTATION" class="headerlink" title="DATA AUGMENTATION"></a>DATA AUGMENTATION</h1><p>$\qquad$作者主要通过两个翻译模型来进行数据增强(起了个名字叫Backtranslation)：一个将英语翻译成其他语言(1个句子变成$k$个句子，本文中$k=5$)，另一个将它所得的结果再翻译回英语(变成$k^2$个句子)。主要用了<a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noopener">Neural machine translation by jointly learning to align and translate</a>中提出的attention-based neural machine translation model，搭建了4层的模型，代码和处理方法来自<a href="https://github.com/tensorflow/nmt" target="_blank" rel="noopener">Neural machine translation (seq2seq) tutorial.</a>。</p>
-<p>$\qquad$原本一个训练对包括$(d,q,a)$，其中$d$是一个很多句子组成的段落，可以抽取出$q$对应的回答$a$。训练时，将$d$和$a$同时更换为相似语句并训练q对应于$a’$。这样做的问题是，更换后的$d’$可能已经不再包含更换后的$a’$了。作者通过char-level 2-gram，选出$a’$中与$a$最相近的句子作为新的answer。</p>
-<p>$\qquad$实际上，data augmentation的效果还可以做到更好。一方面，通过更好的翻译模型我们能够得到更高质量的结果(显然在长句中，翻译的表现更差；考虑可以将长句拆分成短句再分别翻译)。另一方面，在beam search decoding<strong>【这啥】</strong>的时候采样可以提高数据增强的多样性；<a href="https://arxiv.org/abs/1709.02828" target="_blank" rel="noopener">swap</a>的方法(把词换成同类型的其他词)也可以帮助我们获得更多样的数据，但效果一般；还可以把句子中的某些词换成近义词增强多样性；还有人利用生成模型生成更多questions，但是经过验证这种方法效果甚微。同时，也有人通过paraphrasing techniques为QA系统做数据增强<a href="https://arxiv.org/abs/1708.06022" target="_blank" rel="noopener">Learning to paraphrase for question answering</a>。</p>
-<h1 id="EXPERIMENTS"><a href="#EXPERIMENTS" class="headerlink" title="EXPERIMENTS"></a>EXPERIMENTS</h1><h3 id="实验细节："><a href="#实验细节：" class="headerlink" title="实验细节："></a>实验细节：</h3><ol>
-<li>context长250词左右，超过400长的丢弃；问题一般10词左右；回答最长30词；</li>
-<li>训练中按照context长度分batch并调整padding的长度；</li>
-<li>用了两种regularization：①在所有变量上加$L_2$decay；字、词embedding、层间上加dropout；每个encoder模块上使用stochastic depth method对layer进行dropout。</li>
-<li>exponential moving average所有trainable variable。</li>
-<li>optimizer：ADAM(参数原文给出)；batch size、time step等原文均给出；</li>
-</ol>
-<h3 id="实验结果："><a href="#实验结果：" class="headerlink" title="实验结果："></a>实验结果：</h3><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG320.png" width="80%"></p>
-<p>$\qquad$可以看出不加data augmentation时QANet的效果其实和之前是相近的，而多倍的augmentation对无论是EM还是F1都有很大贡献。当然了，之所以augment这么多倍还是跑得起来还是仰仗之前的速度。</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG323.png"></p>
-<p>$\qquad$可以看出贡献度分别是：self-attention(2.8/2.7)，convolution(1.4/1.3)，data augmentation(1.5/1.1)。当原文：英-法-英：英-德-英 = 3:1:1时效果最好。</p>
-
-          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/14/new/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+         
+          <!--/noindex-->
         
       
     </div>
@@ -931,7 +830,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-21 04:14:52" itemprop="dateModified" datetime="2018-10-21T04:14:52-04:00">2018-10-21</time>
+                <time title="修改时间：2018-10-30 03:06:32" itemprop="dateModified" datetime="2018-10-30T03:06:32-04:00">2018-10-30</time>
               
             
           </span>
@@ -965,13 +864,17 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 
       
         
-          
-            <h1 id="What-is-NLP"><a href="#What-is-NLP" class="headerlink" title="What is NLP?"></a>What is NLP?</h1><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG313.png"></p>
+          <h1 id="What-is-NLP"><a href="#What-is-NLP" class="headerlink" title="What is NLP?"></a>What is NLP?</h1><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG313.png"></p>
 <p>$\qquad$Human language: sparse; symbolic; categorial(多种形式表达同一意义); continuous.</p>
-<h1 id="What-is-Deep-Learning"><a href="#What-is-Deep-Learning" class="headerlink" title="What is Deep Learning?"></a>What is Deep Learning?</h1><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG314.png"></p>
-<p>$\qquad$对于不同领域，标注总是一个大问题。因此，对于无监督方法的探索很重要。</p>
-<h1 id="Why-is-language-understanding-difficult"><a href="#Why-is-language-understanding-difficult" class="headerlink" title="Why is language understanding difficult?"></a>Why is language understanding difficult?</h1><h1 id="Application-of-DL-to-NLP"><a href="#Application-of-DL-to-NLP" class="headerlink" title="Application of DL to NLP"></a>Application of DL to NLP</h1>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/12/3try/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+         
+          <!--/noindex-->
         
       
     </div>
@@ -1086,7 +989,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-21 23:57:14" itemprop="dateModified" datetime="2018-10-21T23:57:14-04:00">2018-10-21</time>
+                <time title="修改时间：2018-10-30 03:06:52" itemprop="dateModified" datetime="2018-10-30T03:06:52-04:00">2018-10-30</time>
               
             
           </span>
@@ -1120,242 +1023,17 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 
       
         
+          <h1 id="Natural-Language-Processing-NLP"><a href="#Natural-Language-Processing-NLP" class="headerlink" title="Natural Language Processing(NLP)"></a>Natural Language Processing(NLP)</h1><p>$\qquad$想要让机器理解人类的语言的过程，就像教一个孩子说话一样。</p>
+<p>$\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成了统计规律(大力出奇迹)，学法语，就像是规则+较少的数据，虽然说得不像中文那样好，但也很大限度上发挥了那一点数据的价值。<br>
+          <!--noindex-->
           
-            <h1 id="Natural-Language-Processing-NLP"><a href="#Natural-Language-Processing-NLP" class="headerlink" title="Natural Language Processing(NLP)"></a>Natural Language Processing(NLP)</h1><p>$\qquad$想要让机器理解人类的语言的过程，就像教一个孩子说话一样。</p>
-<p>$\qquad$我到底是怎么学会说话的呢？小学的时候，其实没有学过什么语文语法，渐渐得竟也能说出没有语法毛病的话来。大学的时候学法语却不同，短时间内疯狂得掌握了法语语法，后来基于语法，再加上词汇量阅读量加持，也算是能与人交流。学中文，就像是依靠大量信息在脑中形成了统计规律(大力出奇迹)，学法语，就像是规则+较少的数据，虽然说得不像中文那样好，但也很大限度上发挥了那一点数据的价值。</p>
-<p>$\qquad$然而，想让蠢萌的机器一下子学会长长的句子们，还是有点难。学起汉语还要分词，下次回学校一定要抓个学汉语的瑞士人，问问他们是怎么学会的。信息量一时半会也未必能足够，尤其是面对特殊领域问题时；辞海又那么大，想要用数学去表示一个词也不容易。不用数学表示可不可以呢？毕竟我们在识字的时候，也没有什么向量不向量的。曾经，以规则约束确实是nlp的主流力量。然而，世界上有那么多词，除了规则外有那么多“固定搭配”，请多少专家才能总结好所有的规则呢。</p>
-<p>$\qquad$这么多令人头疼的问题，不如从词的向量化看起。我刚开始实习的时候，最先用到的就是fasttext，毕竟现在的主流方法还是把其他问题转化到数学空间里。</p>
-<p>$\qquad$理想上，我们希望构建这样一个空间：一个能够表征所有词的空间，同时通过这个空间的度量来完成词的度量。最简单的方法无异于：忽略上下文的顺序，取出每个词来，对每个词的有无进行判断从而表示一句话。但这样的向量维数也太高了吧！简单，压缩一下。当然，是不能直接去压缩前面的超大向量的，我们可以另辟蹊径。目前比较好的做法是，利用神经网络直接随机初始化，然后根据词之间的信息迭代生成向量。根据对词的信息的利用方法，主要分为cbow和skip-gram两类。</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG311.png" alt="word2vec_all"></p>
-<h1 id="CBOW-amp-skip-gram"><a href="#CBOW-amp-skip-gram" class="headerlink" title="CBOW &amp; skip-gram"></a>CBOW &amp; skip-gram</h1><p>$\qquad$cbow通过词左右的邻居的信息来预测词本身，skip-gram正好相反，用一个词的信息预测旁边的邻居。这个“预测”讲起来其实有点误导，因为在训练的过程中，被预测的词是已知的，也就是“老师”，而预测别人的词是需要通过GD修正的，是真正的“学生”。所以说在cbow中，通过中间词“老师”的教导，相邻的“学生们”学到了它们应有的表达形式。每个学生最后的成果如何呢？这就要看它天生和多少老师相邻了(它本身的出现频率)。纵览全文，每个词都做了一次老师，辐射了一次知识，复杂度为O(W) [记W为文本的总词数]。skip-gram的阵容则显得豪华一点：每次都由旁边的一票老师们分别开一次小灶，获得的知识当然更多，所得的结果更加准确。但是需要的时间毫无疑问也更久一点，复杂度为O(WC) [记2C为每个词的邻居数]。</p>
-<p>$\qquad$选好教学方式，下面的就是怎么教的问题了。从多到一，最直接的想法就是线性映射，最好直接算个加和或平均数，直接走一圈滑动平均滤波器，最后再来个softmax完事。然而没那么简单，这个softmax不是那么好算。为了改进这一问题，目前有两种主要的方法：Hierarchical Softmax 和 Negative Sampling。</p>
-<h2 id="Hierarchical-Softmax"><a href="#Hierarchical-Softmax" class="headerlink" title="Hierarchical Softmax"></a>Hierarchical Softmax</h2><p>$\qquad$既然softmax这么难算，不如想个办法减小它的计算量。Hierarchical softmax就是出于这样一种想法，利用霍夫曼树(Huffman Tree)来替代softmax完成从projection layer到output layer的映射。对于从input layer到projection layer，则依旧采取取平均数的方法。</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/20171128201141139.png" width="60%" height="60%"></p>
-<p>$\qquad$霍夫曼树(第一次接触是某家公司笔试编程题，结果我稀里糊涂用dict做出来了，印象很深)，是一种能够高效得将整个文本编码为二进制的二叉树。它把出现次数最小的部分两两合并，最终得到一颗树；从根开始到叶子结点(词)，每次向左为0向右为1(cbow中相反，左为1而右为0)。这样，出现频率高的词编码较短，找起来更快；频率低的词则相对较慢。对于cbow来说，我们先将平均得到的向量送入霍夫曼树中，通过参数为它选定path，引导预测结果至中心词对应的叶子结点。霍夫曼树中的每一个结点对各个输入d到底是向左还是向右，这是我们重点需要训练的参数之一，另一个参数是输入量。</p>
-<p>$\qquad$接下来就是具体计算了。记$w$为输入词的向量，$x_w$为$w$对应的隐层结果，$\theta_i^w$为w路径中非叶子结点的参数，$l^w$为$\theta_i^w$的个数，$d_i^w\in \{0,1\}$为对应结点的值，则：</p>
-<ul>
-<li><p>树中的二分点，以logisti function判定：$P(+|x_w,\theta_i^T) = \frac{1}{1+e^{-\theta_i^T}x_w}=\sigma(x_w,\theta_i^T),\qquad P(-|x_w,\theta_i^T) = 1- \sigma(x_w,\theta_i^T)$；</p>
-</li>
-<li><p>对于给定输入$w$， 条件概率为：$p(w|Context(w)) = \prod_{j=2}^{l^w}P(d_j^w|x_w,\theta_{j-1}^w)$；</p>
-</li>
-<li><p>对条件概率进行对数似然和累和，便得到了cbow的目标函数$L$;</p>
-</li>
-<li><p>通过$L$，可以得到$\frac{\partial L(w,j)}{\partial \theta_{j-1}^w} = [1-d_j^w-\sigma(x_w,\theta_{j-1}^w)]x_w$；从而得到$\theta_{j-1}^w$的更新公式；利用$\theta$和$x_w$的对称性，可以得到对$x_w$的梯度和它的更新公式；</p>
-<p>$\qquad$伪代码如下所示：</p>
-<left>
-    <img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG312.png" width="70%" height="70%">
-</left>
-
-<p>$\qquad$对于skip-gram来说，最开始的求和其实多余的。在迭代过程中，将多个条件概率相乘，得到总条件概率从而进一步迭代。不过在skip-gram的源码中并没有将概率相乘，而是分别对参数进行更新。另外，skip-gram的源码没有对输入进行迭代，而是对输出的$2C$个词进行迭代，这样整体的迭代更加均衡。 </p>
-<p>$\qquad$Hierarchical Softmax将隐层到词的距离缩短到了$log(W)$。然而在最坏的情况(词非常生僻)下，它的表现可能并不尽如人意。</p>
-</li>
-</ul>
-<h2 id="Negative-Sampling"><a href="#Negative-Sampling" class="headerlink" title="Negative Sampling"></a>Negative Sampling</h2><p>$\qquad$负采样则采取了另一种思路。对于一个有大量正样本及其对应标签的数据集，想要创造负样本其实很简单：把样本和标签错个位，他们就都对不上号了。实际应用中为了考虑到样本的分布特性，采样方法会稍微复杂一点：对于文章中的词$w\in W$，它出现的概率(加了幂指数)后为：$P(w) = \frac{count(w)^{3/4}}{\sum_{u \in W}count(u)^{3/4}}$；按照这个概率进行不放回随机抽样，即可得到负样本。如果需要的负样本数量较大，则可把原表复制几份进行抽样。这就相当于把一个总长为1，按概率分段的线条分成M等份($M\ge W$)，从中取出$neg$个位置。word2vec中，$M$的默认值为$10^8$。</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG315.png" width="80%"></p>
-<p>$\qquad$有了正负样本和标签，我们可以得到需要最大化的函数为：</p>
-<script type="math/tex; mode=display">\prod_{i=0}^{neg}P(context(w_0),w_i) = \sigma(x_{w_0},\theta_{w_0}^T)\prod_{i=1}^{neg}(1-\sigma(x_{w_i},\theta_{w_i}^T))</script><p>$\qquad$对它求log取负，则得到了需要最小化的目标函数。通过Gradient Descendent优化参数和输入值，则可以得到所需要的向量。</p>
-<h2 id="Fast-text"><a href="#Fast-text" class="headerlink" title="Fast-text"></a>Fast-text</h2><p>$\qquad$Fasttext和hierarchical softmax实现的cbow很像。一般来说主要区别有几点：</p>
-<ul>
-<li>输入：fasttext不仅输入context window范围内的每个字，也输入它们组成的n-gram。因此，它对语句的前后顺序信息有了更多利用。在英文中，这种做法在morphology层面上大大改善了同源词的问题。</li>
-<li>输出：word2vec的霍夫曼树叶子结点为词，而fasttext中叶子结点为文本分类的label。这样做是因为fasttext设计的初衷是希望具备文本分类的功能，embedding算是一个“副产品”。(疑问：那用fasttext得到embedding的时候label怎么选呢？我认为此时还是与word2vec相同。只是加入更多信息的同时，fast-text的运算速度也增加了)。</li>
-</ul>
-<h1 id="Count-Based-Methods"><a href="#Count-Based-Methods" class="headerlink" title="Count Based Methods"></a>Count Based Methods</h1><p>$\qquad$可以看出，word2vec大体上的思想是在遍历时对每个词逐渐调整。在这个过程中，两个词“互为邻居”的次数很大程度上决定了最后的结果。那么我们为什么不直接建个矩阵来衡量词与词之间的co-occurance呢？当然可以。<strong>(这个想法好熟悉好像在computer vision里见过，有空翻下ppt)</strong>。至于什么叫做“互为邻居”，可以通过定义window的长度来限制(一般为5-10)。这种做法其实和word2vec有点像，它可以在一定程度上刻画出词的词性和语义。</p>
-<p>$\qquad$对于词汇量为$W$的语料，我们可以得到一个$W\times W$的协方差矩阵。那么问题来了：语料稍微一多，矩阵就变得巨大且sparse。咋办呢，降维呗，svd，降到25-1000还能接受。一些需要注意的小点：① 它他她之类的词就不看了(去停用词)；② 一个window内不同位置可以加权处理；③ 可以不用出现次数，而用pearson相关系数(值越大越相关)。不过这个方法也有缺点：当$W$很大时，SVD也不是那么好算的；出现新词的时候想加入矩阵相当麻烦。word2vec和count based method这两种方法的比较如下，可以看到它们各有优缺点：</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG326.png"></p>
-<h1 id="GloVe"><a href="#GloVe" class="headerlink" title="GloVe"></a>GloVe</h1><p>$\qquad$Word2Vec和Count Based Method各有优点，而有一种算法却可以把它们的优点结合起来，这就是GloVe(那为啥我们平时还用fasttext而不用它呢？好吧，据大佬说还是有人用的。另外大佬对于中文分词不准确的看法：别分了，直接上字向量)。这个算法很简洁，也很单纯，但是效果却很好。此算法的具体细节如下：</p>
-<p>$\qquad$首先算出Count Based Method中的共现矩阵$X$，其中$X_{ij}$为词$j$出现在词$i$上下文的次数，$X_{i}$为词$i$作为context的总次数，$P_{ij}=X_{ij}/X_i$为词$j$出现在词$i$上下文的概率(共现概率)，$w_i$为词$i$作为中心词时的词向量，$\tilde w_i$为词$i$作为context时的词向量。对于一个未知的词$k$，我们可以不直接看它和其他词的共现次数，而看那些共现词之间的概率比值(想起了协同过滤……)。举个栗子🌰：</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG327.png" width="80%"></p>
-<p>上面的概率计算使用的语料库是一个热动力学相关的语料库.</p>
-<ul>
-<li><p>对于和单词<strong>i=ice</strong>关联性强而和单词<strong>j=steam</strong>关联性弱的单词，比如<strong>k=solid</strong>,我们期望 $P_{ik}/P_{jk}$很大；</p>
-</li>
-<li><p>反之，对于和单词<strong>i=ice</strong>关联性弱而和单词<strong>j=steam</strong>关联性强的单词，我们期望比率很小，比如<strong>k=gas；</strong></p>
-</li>
-<li>对于词water和fashion这种和ice,steam都有关联的词，概率比率接近1</li>
-</ul>
-<p>$\qquad$两个词关系的强弱，可以通过比较他们和不同<strong>“探测词”(上面的solid和gas）</strong>的共现概率的比值来衡量。可以看出，概率的比率可以比原始的概率更好的衡量词语词之间的关联性。因此我们得到概率的比值： <script type="math/tex">F(w_i,w_j,\widetilde w_k)=\frac{P_{ik}}{P_{jk}}</script></p>
-<p>$\qquad$ 考虑到$i,j$的对称性和左右向量标量的对应，可以改写为：<script type="math/tex">F((w_i-w_j)^T\tilde w_k)=\frac{P_{ik}}{P_{jk}}</script></p>
-<p>$\qquad$那么问题来了。左边这个式子中的$F$要怎么构造呢？它既要维护右边的比例关系，又得保持$i,j$和$k$之间的对称性(众所周知，中心词和背景词是对称的)。结论是：$F=exp$。由此可得：<script type="math/tex">F((w_i-w_j)^T\tilde w_k)=\frac{F(w_i^T\tilde w_k)}{F(w_j^T\tilde w_k)}=\frac{e^{w_i^T\tilde w_k}}{e^{w_j^T\tilde w_k}}=\frac{X_{ik}}{X_{jk}}</script></p>
-<p>$\qquad$加上bias，可得：<script type="math/tex">w_i^T\tilde w_k +b_i +\tilde b_k=log(X_{ik})</script></p>
-<p>$\qquad$由此可得cost function：</p>
-<script type="math/tex; mode=display">J = \sum_{i,j=1}^V f(X_{ij})(w_i^T\tilde w_j +b_i+\tilde b_j-logX_{ij})^2</script><p>$\qquad$其中$V$是词典的大小，$f$是用来控制比重的weighting function，满足：</p>
-<ul>
-<li><p>$f(0)=0$ ;</p>
-</li>
-<li><p>$f(x)$应该是一个非递减函数以便稀有的共现不至于overweight；</p>
-</li>
-<li><p>对于足够大的x，$f(x)$应该足够小以便频繁的共现不至于overweight；</p>
-</li>
-</ul>
-<p>$\qquad$最终得到$f$的形式为：</p>
-<p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG330.png" width="50%"></p>
-<p>$\qquad$最终得到$w_i,\tilde w_i$，相加即为词$i$的最佳词向量表示。</p>
-<p>$\qquad$GloVe看上去是极好了，训练快，适应大规模数据，同时能够在小数据集上表现良好。</p>
-<h1 id="Evaluation-of-word-embedding"><a href="#Evaluation-of-word-embedding" class="headerlink" title="Evaluation of word embedding"></a>Evaluation of word embedding</h1><ol>
-<li>评价embedding本身</li>
-</ol>
-<ul>
-<li>看词向量在一个小任务上的表现(算几个相关词的cos，或把embedding画出来看看)</li>
-<li>计算速度</li>
-<li>可解释性</li>
-<li>还是要看实际问题</li>
-</ul>
-<ol>
-<li>评价embedding在应用场景下的表现</li>
-</ol>
-<ul>
-<li>看实际问题中的表现</li>
-<li>着重关注accuracy</li>
-<li>系统的作用域</li>
-<li>如果换成另一种变差了：那这种更好</li>
-</ul>
-<p>$\qquad$根据研究结论：300维的词向量最好，对于GloVe来说窗口长度为8最好。train更久会更好，但多于一定次数后效果增长不大；用wikipedia训练比用新闻语料训练更好(因为口语化的词更多？)；对于歧义问题，可以先对一个词的各种window作cluster，每种cluster搞自己的向量。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/09/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="qqq">
-      <meta itemprop="description" content="records">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="僻静小院">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/09/hello-world/" itemprop="url">
-                  Hello World
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-10-09 03:50:15" itemprop="dateCreated datePublished" datetime="2018-10-09T03:50:15-04:00">2018-10-09</time>
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/11/First-try/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+         
+          <!--/noindex-->
         
       
     </div>
@@ -1435,7 +1113,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1599,7 +1277,79 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config("");
 </script>
@@ -1618,38 +1368,9 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->
 
-
-
+    
   
 
-
-
-  
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
 
   
   
