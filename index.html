@@ -50,10 +50,6 @@
 
 
 
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
 
 
 
@@ -91,9 +87,9 @@
     scheme: 'Muse',
     version: '6.4.2',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    fastclick: ,
-    lazyload: ,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
     tabs: true,
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     algolia: {
@@ -230,14 +226,16 @@
         
           
           <li class="menu-item menu-item-home menu-item-active">
-    <a href="/" rel="section">首页</a>
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
   </li>
         
         
         
           
           <li class="menu-item menu-item-archives">
-    <a href="/archives/" rel="section">归档</a>
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
   </li>
 
       
@@ -337,6 +335,22 @@
               <time title="创建时间：2018-10-30 00:35:30" itemprop="dateCreated datePublished" datetime="2018-10-30T00:35:30-04:00">2018-10-30</time>
             
 
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-29 12:40:59" itemprop="dateModified" datetime="2018-10-29T12:40:59-04:00">2018-10-29</time>
+              
             
           </span>
 
@@ -507,6 +521,22 @@
               <time title="创建时间：2018-10-22 21:42:21" itemprop="dateCreated datePublished" datetime="2018-10-22T21:42:21-04:00">2018-10-22</time>
             
 
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-25 21:46:07" itemprop="dateModified" datetime="2018-10-25T21:46:07-04:00">2018-10-25</time>
+              
             
           </span>
 
@@ -688,6 +718,22 @@
               <time title="创建时间：2018-10-13 16:44:35" itemprop="dateCreated datePublished" datetime="2018-10-13T16:44:35-04:00">2018-10-13</time>
             
 
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-21 04:08:38" itemprop="dateModified" datetime="2018-10-21T04:08:38-04:00">2018-10-21</time>
+              
             
           </span>
 
@@ -872,6 +918,22 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
             
 
             
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-21 04:14:52" itemprop="dateModified" datetime="2018-10-21T04:14:52-04:00">2018-10-21</time>
+              
+            
           </span>
 
           
@@ -1010,6 +1072,22 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
               <time title="创建时间：2018-10-10 15:27:20" itemprop="dateCreated datePublished" datetime="2018-10-10T15:27:20-04:00">2018-10-10</time>
             
 
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-21 23:57:14" itemprop="dateModified" datetime="2018-10-21T23:57:14-04:00">2018-10-21</time>
+              
             
           </span>
 
@@ -1351,6 +1429,23 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
           </div>
 
           
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
 
           
 
@@ -1386,7 +1481,7 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
       <div class="footer-inner">
         <div class="copyright"> &copy; <span itemprop="copyrightYear">2018</span>
   <span class="with-love" id="animate">
-    <i class="fa fa-"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">qqq</span>
 
@@ -1398,7 +1493,11 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 
 
 
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
 
+
+
+  <span class="post-meta-divider">|</span>
 
 
 
@@ -1453,8 +1552,6 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
 
 
 
-  
-
 
 
 
@@ -1482,11 +1579,6 @@ abs/1611.01603" target="_blank" rel="noopener">trilinear function</a>计算每�
   
   
     <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
 
 
