@@ -119,7 +119,7 @@
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG347.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG351.png">
 <meta property="og:image" content="http://pgn2oyk5g.bkt.clouddn.com/20180512031820416.png">
-<meta property="og:updated_time" content="2018-10-30T07:08:14.109Z">
+<meta property="og:updated_time" content="2018-10-31T01:48:43.819Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[论文笔记]BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding">
 <meta name="twitter:description" content="$\qquad$最近这个模型刚出来，感觉nlp领域的格局大震动，我还是先蹲着看看大家如何讨论以及google会不会又搞什么新花样好了（毕竟这模型也不是谁想跑就能跑起来的……）。持续关注一下，估计几个月内还要更新这篇233 Introduction$\qquad$目前在nlp领域，pre-trained language model在很多任务中都表现得十分出色。比如，需要对整句分析来判断句子关系的任">
@@ -349,7 +349,7 @@
                 
               
 
-              <time title="创建时间：2018-10-30 00:35:30 / 修改时间：03:08:14" itemprop="dateCreated datePublished" datetime="2018-10-30T00:35:30-04:00">2018-10-30</time>
+              <time title="创建时间：2018-10-30 00:35:30 / 修改时间：21:48:43" itemprop="dateCreated datePublished" datetime="2018-10-30T00:35:30-04:00">2018-10-30</time>
             
 
             
@@ -390,7 +390,7 @@
         <p>$\qquad$最近这个模型刚出来，感觉nlp领域的格局大震动，我还是先蹲着看看大家如何讨论以及google会不会又搞什么新花样好了（毕竟这模型也不是谁想跑就能跑起来的……）。持续关注一下，估计几个月内还要更新这篇233</p>
 <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>$\qquad$目前在nlp领域，pre-trained language model在很多任务中都表现得十分出色。比如，需要对整句分析来判断句子关系的任务：natural language inference（根据前提premise判断假说hypothesis和它的关系：矛盾contradiction or 蕴含entailment）、paraphrasing（复述）；token层面需要生成某些特定token的任务：named entity recognition、阅读理解等。<br><a id="more"></a></p>
 <p>$\qquad$目前将预训练语言表征应用于实际下游任务存在两种策略：基于特征的策略（feature-based）和微调策略（fine-tuning）。基于特征的策略（如 ELMo）使用将预训练表征作为额外特征的任务专用架构。微调策略（如生成预训练 Transformer (OpenAI GPT)）引入了任务特定最小参数，通过简单地微调预训练参数在下游任务中进行训练。在之前的研究中，两种策略在预训练期间使用相同的目标函数，利用单向语言模型来学习通用语言表征。</p>
-<p>$\qquad$然而，google团队认为现有的的技术完全没有发挥出这两种策略的优势，尤其是fine-tuning。这其中主要是因为现有的language model大多是单向的，每个token只能考虑到它前面词带来的信息，后面的词却被忽略了。比如说在阅读理解这种语境中，上下文都很重要，不能只看上文不看下文。于是作者提出了一种新的预训练模型来克服这种单向局限：masked language model(MLM)，它随机将input中的一些词mask掉；然后让模型根据这个被mask词的上下文来预测原词的id（完形填空？）。</p>
+<p>$\qquad$然而，google团队认为现有的的技术完全没有发挥出这两种策略的优势，尤其是fine-tuning。这其中主要是因为现有的language model大多是单向的，每个token只能考虑到它前面词带来的信息，后面的词却被忽略了。比如说在阅读理解这种语境中，上下文都很重要，不能只看上文不看下文。于是作者提出了一种新的预训练模型来克服这种单向局限：masked language model(MLM)，它随机将input中的一些词mask掉；然后让模型根据这个被mask词的上下文来预测原词的id（完形填空）。</p>
 <h1 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h1><h2 id="Model-Architecture-OpenAI-GPT"><a href="#Model-Architecture-OpenAI-GPT" class="headerlink" title="Model Architecture - OpenAI_GPT"></a>Model Architecture - OpenAI_GPT</h2><p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG348.png"></p>
 <p>$\qquad$关于模型结构，BERT完全沿用了Transformer的源码。为了通过比较来突出信息双向利用带来的便利，BERT和<a href="https://www.cs.ubc.ca/~amuham01/LING530/papers/radford2018improving.pdf" target="_blank" rel="noopener">OpenAI GPT(generative pre-training)</a>保持高度一致。我们来看一下OpenAI GPT的具体结构：</p>
 <p><img src="http://pgn2oyk5g.bkt.clouddn.com/WechatIMG347.png"></p>
