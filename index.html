@@ -512,7 +512,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-05 22:52:23" itemprop="dateModified" datetime="2018-11-05T22:52:23-05:00">2018-11-05</time>
+                <time title="修改时间：2018-11-05 23:03:09" itemprop="dateModified" datetime="2018-11-05T23:03:09-05:00">2018-11-05</time>
               
             
           </span>
@@ -547,6 +547,7 @@
       
         
           <p>$\qquad$关于Transformer的始祖文章，感觉中文查到的资料鲜有整体讲得比较清(ruo)楚(zhi)的，故记下一篇写写自己的理解。感谢大佬<a href="https://www.zhihu.com/people/zack-zhao-waseda/activities" target="_blank" rel="noopener">Zack</a>的亲情指导！</p>
+<hr>
 <h1 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h1><p>$\qquad$ 近年来，句子转换的模型大多数都基于复杂的recurrent或convolutional network(RNN, LSTM, GRU etc.)。为了减少RNN的计算量，很多模型如ConvS2S、ByteNet采用卷积层来计算输入和输出之间的latent space。然而这些方法都是建立在对输入信号的分布有一些假设的基础上的，比如说ConvS2S假设是线性的，ByteNet假设是log的。这种假设对于隔得比较远的点来说误差更大。然而本文模型中的multi-head机制很好得规避了这个问题。google团队单靠attention层实现了一个机器翻译模型Transformer，并且在不同规模的公开数据集上都有良好的表现。<br>
           <!--noindex-->
           
